@@ -128,6 +128,39 @@ Object oMain is a Panel
                 Set psCaption to "&Informes"
                 Set psToolTip to "Informes"
                 Set psDescription to "Informes disponibles"
+
+                Object oMARCAJESMenuItem is a cCJMenuItem
+                    Set psCaption to "MARCAJES"
+                    Set psTooltip to "MARCAJES"
+                
+                    Procedure OnExecute Variant vCommandBarControl
+                        Handle hoClient
+                        Get Client_Id to hoClient
+                        Send Activate_MARCAJES of hoClient
+                    End_Procedure
+                End_Object
+
+                Object oPruebaMenuItem is a cCJMenuItem
+                    Set psCaption to "Prueba"
+                    Set psTooltip to "Prueba"
+                
+                    Procedure OnExecute Variant vCommandBarControl
+                        Handle hoClient
+                        Get Client_Id to hoClient
+                        Send Activate_Prueba of hoClient
+                    End_Procedure
+                End_Object
+
+                Object oRMarcajeMenuItem is a cCJMenuItem
+                    Set psCaption to "R_Marcaje"
+                    Set psTooltip to "R_Marcaje"
+                
+                    Procedure OnExecute Variant vCommandBarControl
+                        Handle hoClient
+                        Get Client_Id to hoClient
+                        Send Activate_R_Marcaje of hoClient
+                    End_Procedure
+                End_Object
             End_Object
 
             Object oNavigateMenu is a cCJMenuItem
@@ -334,6 +367,9 @@ Object oMain is a Panel
         Use StdAbout.pkg
         Use EMPLEADOS.vw
         Use MARCAJES.vw
+        Use MARCAJES.rv
+        Use Prueba.rv
+        Use R_Marcaje.rv
 
         Procedure Activate_About
             Send DoAbout "" "" "" "" ""

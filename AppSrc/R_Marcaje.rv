@@ -1,0 +1,166 @@
+Use Windows.pkg
+Use DFRptVw.pkg
+Use DFRpt.pkg
+Use File_Dlg.Pkg
+
+Activate_View Activate_R_Marcaje for R_Marcaje
+Object R_Marcaje is a ReportView
+    Set Location to 6 6
+    Set Size to 134 246
+    Set Label to "R_Marcaje"
+
+    Object oSaveAsDialog is a SaveAsDialog
+    End_Object
+
+    Procedure StartReport
+        Integer iOutputDevice 
+        Handle hoWorkspace
+        String sFileName sCurrentDirectory sDataPath
+    
+        Get Output_Device_Mode to iOutputDevice
+    
+        Case Begin
+            Case (iOutputDevice = PRINT_TO_WINDOW)
+                Get_Current_Directory to sCurrentDirectory
+                Get phoWorkspace Of ghoApplication to hoWorkspace
+                Get psDataPath Of hoWorkspace to sDataPath
+                Get PathAtIndex Of hoWorkspace sDataPath 1 to sDataPath
+                Set_Directory sDataPath
+                Make_Temp_File "TXT" sFileName
+                Set_Directory sCurrentDirectory
+                If (Right(sDataPath, 1) <> Sysconf(SYSCONF_DIR_SEPARATOR)) Begin
+                    Move (sDataPath - Sysconf(SYSCONF_DIR_SEPARATOR)) To sDataPath
+                End
+                Move (sDataPath - sFileName) to sFileName
+                Set Output_Device_Name to sFileName
+                Case Break
+            
+        Case End
+    
+        Send Run_Report
+    
+        If (iOutputDevice = PRINT_TO_WINDOW) Begin
+            Runprogram Background "NotePad" sFileName
+            EraseFile sFileName
+        End
+    End_Procedure
+    
+    Object oBasicReport is a BasicReport
+        // Set Server To DDOName
+        
+        // Create a new file with the images for the report. Include this filename in the
+        // component with a USE statement. Replace the HeaderSection, BodySection, FooterSection
+        // with the imagenames you've created.
+        // NOTE: 
+        // - Image names must be unique throughout the program
+        // - Images start at the first column of the sourcecode in the format /ImageName
+        // - End of an image is the start of a new one or a /*
+
+        Function Starting_Main_Report Returns Integer
+            Integer iRetval
+            
+            Forward Get Starting_Main_Report to iRetval
+            
+            Function_Return iRetval
+        End_Function
+
+     
+
+    End_Object
+
+    Object TxtReporte is a Form
+        Set Size to 13 100
+        Set Location to 36 77
+        Set Label to "Seleccionar"
+        Set Prompt_Button_Mode to PB_PromptOn
+    
+        // OnChange is called on every changed character
+    //    Procedure OnChange
+    //        String sValue
+    //    
+    //        Get Value to sValue
+    //    End_Procedure
+    Set Prompt_Object to (EmpleadoTable_sl(Current_Object))
+    
+        Procedure Prompt_Callback Integer hSL
+            //Set initial_column of hSL to 0
+           // Set export_column of hSL to 0
+            
+
+        End_Procedure
+    
+    End_Object
+    Object BtnGenerarReporte is a Button
+        Set Size to 14 100
+        Set Location to 67 78
+        Set Label to "Generar Reporte"
+    
+        // fires when the button is clicked
+        Procedure OnClick
+            Send GenerarRerporte
+        End_Procedure
+    
+    End_Object
+    
+     // Procedimiento para dar inicio a la generacion del reporte
+    Procedure GenerarRerporte
+        String sDatoGenerador
+        
+        Move '' to sDatoGenerador  // asignamos valor vacio a nuestra variable
+        Get Value of TxtReporte to sDatoGenerador // TxtReporte es la caja de texto en nuestro form. traemos us valor y lo asignamos a nuestro sDatoGenerador
+        
+        //Creamos una condicion para verificar que sDatoGenerador no este vacio
+        If (Trim(sDatoGenerador)) ne '' Begin
+            Clear MarcajeTable  //tabla
+            Move (Trim(sDatoGenerador)) to MarcajeTable.Codigo  //atributo codiog de la tabla Marcajestable
+            Find eq MarcajeTable by Index.1   // busca segun el indice
+            If [not Found] Begin
+                Error 200 'Ingrese un Marcaje Valido' // si no se encuentra que retorne el mensaje
+                Procedure_Return // retorna el procedimienot para hacer uso del sisema
+            End
+        End
+   
+   
+        Set Report_Name of (ReporteMarcajesObject(Current_Object)) to "ReporteMarcajes.rpt"
+        Send Run_Report to (ReporteMarcajesObject(Current_Object))
+    End_Procedure
+    
+   Object ReporteMarcajesObject is a WinQLReport  //Creamos el objeto
+        Set Output_Destination to WQL_PRINT_TO_WINDOW   // enviar la impresion de pantalla
+        
+        Procedure OnInitializeReport
+            
+            String var_MarcajesTable var_Parametros var_Seleccion      // declaracion de variable
+            
+            Move '' to var_MarcajesTable  // asignamos un valor vacio
+            
+            Forward Send OnInitializeReport  // lanzamos el iniciador del reporte
+            
+            Get Value of TxtReporte to var_MarcajesTable  // obtenes el valor de la caja de texto y lo asignamos a la variable
+            
+            Move '' to var_Parametros // asignamos vacio a parametros
+            
+            // Validamos que el lo que se le asigno a var_Marcajes no haya sido un dato vacio
+            If (var_MarcajesTable ne '') Begin
+                Move '' to var_Seleccion // asignamos vacio
+                Append var_Seleccion '{MarcajeTable.Codigo} =' ('"'+var_MarcajesTable+'"')  // adjuntamos la seleccion con el valor asignado
+            End
+            
+            Append var_Parametros '"'
+            Append var_Parametros 'LISTA DE MARCAJES"'
+            
+     
+            Set SelectionFormula to var_Seleccion
+            Set Formula "Titulo" to var_Parametros
+                
+            
+            
+            
+        End_Procedure
+       
+    
+   End_Object
+    
+   
+
+End_Object

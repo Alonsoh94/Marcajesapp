@@ -1,4 +1,4 @@
-Compiling Program: C:\DataFlex Projects\MARCAJESAPP\AppSrc\JUEVESAPPMARCAJES.src
+Compiling Program: C:\DataFlex Projects\MARCAJESAPP\AppSrc\APPMARCAJESCR.src
 Memory Available: 2147483646
 1>//**************************************************************
 1>// WindowsProject.tpl for Spanish translated by Moose Software (www.moose-software.com) 
@@ -4130,114 +4130,114 @@ Including file: R_Marcaje.rv    (C:\DataFlex Projects\MARCAJESAPP\AppSrc\R_Marca
 78173>>>    Set Prompt_Object to (EmpleadoTable_sl(Current_Object))
 78174>>>    
 78174>>>        Procedure Prompt_Callback Integer hSL
-78177>>>            Set initial_column of hSL to 0
-78178>>>            Set export_column of hSL to 0
-78179>>>            
-78179>>>
-78179>>>        End_Procedure
-78180>>>    
-78180>>>    End_Object
-78181>>>    Object BtnGenerarReporte is a Button
-78183>>>        Set Size to 14 100
-78184>>>        Set Location to 67 78
-78185>>>        Set Label to "Generar Reporte"
-78186>>>    
-78186>>>        // fires when the button is clicked
-78186>>>        Procedure OnClick
-78189>>>            Send GenerarRerporte
-78190>>>        End_Procedure
-78191>>>    
-78191>>>    End_Object
-78192>>>    
-78192>>>     // Procedimiento para dar inicio a la generacion del reporte
-78192>>>    Procedure GenerarRerporte
-78195>>>        String sDatoGenerador
+78177>>>            //Set initial_column of hSL to 0
+78177>>>           // Set export_column of hSL to 0
+78177>>>            
+78177>>>
+78177>>>        End_Procedure
+78178>>>    
+78178>>>    End_Object
+78179>>>    Object BtnGenerarReporte is a Button
+78181>>>        Set Size to 14 100
+78182>>>        Set Location to 67 78
+78183>>>        Set Label to "Generar Reporte"
+78184>>>    
+78184>>>        // fires when the button is clicked
+78184>>>        Procedure OnClick
+78187>>>            Send GenerarRerporte
+78188>>>        End_Procedure
+78189>>>    
+78189>>>    End_Object
+78190>>>    
+78190>>>     // Procedimiento para dar inicio a la generacion del reporte
+78190>>>    Procedure GenerarRerporte
+78193>>>        String sDatoGenerador
+78193>>>        
+78193>>>        Move '' to sDatoGenerador  // asignamos valor vacio a nuestra variable
+78194>>>        Get Value of TxtReporte to sDatoGenerador // TxtReporte es la caja de texto en nuestro form. traemos us valor y lo asignamos a nuestro sDatoGenerador
 78195>>>        
-78195>>>        Move '' to sDatoGenerador  // asignamos valor vacio a nuestra variable
-78196>>>        Get Value of TxtReporte to sDatoGenerador // TxtReporte es la caja de texto en nuestro form. traemos us valor y lo asignamos a nuestro sDatoGenerador
-78197>>>        
-78197>>>        //Creamos una condicion para verificar que sDatoGenerador no este vacio
-78197>>>        If (Trim(sDatoGenerador)) ne '' Begin
-78199>>>            Clear MarcajeTable  //tabla
-78200>>>            Move (Trim(sDatoGenerador)) to MarcajeTable.Codigo  //atributo codiog de la tabla Marcajestable
-78201>>>            Find eq MarcajeTable by Index.1   // busca segun el indice
-78202>>>>
-78202>>>            If [not Found] Begin
-78204>>>                Error 200 'Ingrese un Marcaje Valido' // si no se encuentra que retorne el mensaje
-78205>>>>
-78205>>>                Procedure_Return // retorna el procedimienot para hacer uso del sisema
-78206>>>            End
-78206>>>>
-78206>>>        End
-78206>>>>
-78206>>>   
-78206>>>   
-78206>>>        Set Report_Name of (ReporteMarcajesObject(Current_Object)) to "ReporteMarcajes.rpt"
-78207>>>        Send Run_Report to (ReporteMarcajesObject(Current_Object))
-78208>>>    End_Procedure
-78209>>>    
-78209>>>   Object ReporteMarcajesObject is a WinQLReport  //Creamos el objeto
-78211>>>        Set Output_Destination to WQL_PRINT_TO_WINDOW   // enviar la impresion de pantalla
-78212>>>        
-78212>>>        Procedure OnInitializeReport
-78215>>>            
-78215>>>            String var_MarcajesTable var_Parametros var_Seleccion      // declaracion de variable
-78215>>>            
-78215>>>            Move '' to var_MarcajesTable  // asignamos un valor vacio
+78195>>>        //Creamos una condicion para verificar que sDatoGenerador no este vacio
+78195>>>        If (Trim(sDatoGenerador)) ne '' Begin
+78197>>>            Clear MarcajeTable  //tabla
+78198>>>            Move (Trim(sDatoGenerador)) to MarcajeTable.Codigo  //atributo codiog de la tabla Marcajestable
+78199>>>            Find eq MarcajeTable by Index.1   // busca segun el indice
+78200>>>>
+78200>>>            If [not Found] Begin
+78202>>>                Error 200 'Ingrese un Marcaje Valido' // si no se encuentra que retorne el mensaje
+78203>>>>
+78203>>>                Procedure_Return // retorna el procedimienot para hacer uso del sisema
+78204>>>            End
+78204>>>>
+78204>>>        End
+78204>>>>
+78204>>>   
+78204>>>   
+78204>>>        Set Report_Name of (ReporteMarcajesObject(Current_Object)) to "ReporteMarcajes.rpt"
+78205>>>        Send Run_Report to (ReporteMarcajesObject(Current_Object))
+78206>>>    End_Procedure
+78207>>>    
+78207>>>   Object ReporteMarcajesObject is a WinQLReport  //Creamos el objeto
+78209>>>        Set Output_Destination to WQL_PRINT_TO_WINDOW   // enviar la impresion de pantalla
+78210>>>        
+78210>>>        Procedure OnInitializeReport
+78213>>>            
+78213>>>            String var_MarcajesTable var_Parametros var_Seleccion      // declaracion de variable
+78213>>>            
+78213>>>            Move '' to var_MarcajesTable  // asignamos un valor vacio
+78214>>>            
+78214>>>            Forward Send OnInitializeReport  // lanzamos el iniciador del reporte
 78216>>>            
-78216>>>            Forward Send OnInitializeReport  // lanzamos el iniciador del reporte
+78216>>>            Get Value of TxtReporte to var_MarcajesTable  // obtenes el valor de la caja de texto y lo asignamos a la variable
+78217>>>            
+78217>>>            Move '' to var_Parametros // asignamos vacio a parametros
 78218>>>            
-78218>>>            Get Value of TxtReporte to var_MarcajesTable  // obtenes el valor de la caja de texto y lo asignamos a la variable
-78219>>>            
-78219>>>            Move '' to var_Parametros // asignamos vacio a parametros
-78220>>>            
-78220>>>            // Validamos que el lo que se le asigno a var_Marcajes no haya sido un dato vacio
-78220>>>            If (var_MarcajesTable ne '') Begin
-78222>>>                Move '' to var_Seleccion // asignamos vacio
-78223>>>                Append var_Seleccion '{MarcajeTable.Codigo} =' ('"'+var_MarcajesTable+'"')  // adjuntamos la seleccion con el valor asignado
-78225>>>            End
-78225>>>>
+78218>>>            // Validamos que el lo que se le asigno a var_Marcajes no haya sido un dato vacio
+78218>>>            If (var_MarcajesTable ne '') Begin
+78220>>>                Move '' to var_Seleccion // asignamos vacio
+78221>>>                Append var_Seleccion '{MarcajeTable.Codigo} =' ('"'+var_MarcajesTable+'"')  // adjuntamos la seleccion con el valor asignado
+78223>>>            End
+78223>>>>
+78223>>>            
+78223>>>            Append var_Parametros '"'
+78224>>>            Append var_Parametros 'LISTA DE MARCAJES"'
 78225>>>            
-78225>>>            Append var_Parametros '"'
-78226>>>            Append var_Parametros 'LISTA DE MARCAJES"'
+78225>>>     
+78225>>>            Set SelectionFormula to var_Seleccion
+78226>>>            Set Formula "Titulo" to var_Parametros
+78227>>>                
 78227>>>            
-78227>>>     
-78227>>>            Set SelectionFormula to var_Seleccion
-78228>>>            Set Formula "Titulo" to var_Parametros
-78229>>>                
-78229>>>            
-78229>>>            
-78229>>>            
-78229>>>        End_Procedure
-78230>>>       
-78230>>>    
-78230>>>   End_Object
-78231>>>    
-78231>>>   
-78231>>>
-78231>>>End_Object
-78232>
-78232>        Procedure Activate_About
-78235>            Send DoAbout "" "" "" "" ""
-78236>        End_Procedure
+78227>>>            
+78227>>>            
+78227>>>        End_Procedure
+78228>>>       
+78228>>>    
+78228>>>   End_Object
+78229>>>    
+78229>>>   
+78229>>>
+78229>>>End_Object
+78230>
+78230>        Procedure Activate_About
+78233>            Send DoAbout "" "" "" "" ""
+78234>        End_Procedure
+78235>
+78235>    End_Object
+78236>
+78236>End_Object
 78237>
-78237>    End_Object
+78237>Start_UI
 78238>
-78238>End_Object
-78239>
-78239>Start_UI
-78240>
-78240>//************************** end of WindowsProject.tpl for Spanish **************
-78240>
+78238>//************************** end of WindowsProject.tpl for Spanish **************
+78238>
 Summary
 Memory Available: 2147483646
 Total Warnings : 0
 Total Errors   : 0
 Total Symbols  : 44608
 Total Resources: 0
-Total Commands : 78239
+Total Commands : 78237
 Total Windows  : 1
 Total Pages    : 1
 Static Data    : 477372
-Message area   : 542780
+Message area   : 542754
 Total Blocks   : 28110

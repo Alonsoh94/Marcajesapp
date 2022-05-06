@@ -4,3 +4,4 @@ Version=18.2
 ConfigFile=.\Programs\Config.ws
 [Projects]
 Project0=JUEVESAPPMARCAJES.src
+Project1=APPMARCAJESCR.src

@@ -1,0 +1,74 @@
+Use Windows.pkg
+Use DFRptVw.pkg
+Use DFRpt.pkg
+Use File_Dlg.Pkg
+
+Activate_View Activate_Prueba for Prueba
+Object Prueba is a ReportView
+    Set Location to 6 6
+    Set Size to 84 181
+    Set Label to "Prueba"
+
+    Object oSaveAsDialog is a SaveAsDialog
+    End_Object
+
+    Procedure StartReport
+        Integer iOutputDevice 
+        Handle hoWorkspace
+        String sFileName sCurrentDirectory sDataPath
+    
+        Get Output_Device_Mode to iOutputDevice
+    
+        Case Begin
+            Case (iOutputDevice = PRINT_TO_WINDOW)
+                Get_Current_Directory to sCurrentDirectory
+                Get phoWorkspace Of ghoApplication to hoWorkspace
+                Get psDataPath Of hoWorkspace to sDataPath
+                Get PathAtIndex Of hoWorkspace sDataPath 1 to sDataPath
+                Set_Directory sDataPath
+                Make_Temp_File "TXT" sFileName
+                Set_Directory sCurrentDirectory
+                If (Right(sDataPath, 1) <> Sysconf(SYSCONF_DIR_SEPARATOR)) Begin
+                    Move (sDataPath - Sysconf(SYSCONF_DIR_SEPARATOR)) To sDataPath
+                End
+                Move (sDataPath - sFileName) to sFileName
+                Set Output_Device_Name to sFileName
+                Case Break
+            
+        Case End
+    
+        Send Run_Report
+    
+        If (iOutputDevice = PRINT_TO_WINDOW) Begin
+            Runprogram Background "NotePad" sFileName
+            EraseFile sFileName
+        End
+    End_Procedure
+    
+    Object oBasicReport is a BasicReport
+        // Set Server To DDOName
+        
+        // Create a new file with the images for the report. Include this filename in the
+        // component with a USE statement. Replace the HeaderSection, BodySection, FooterSection
+        // with the imagenames you've created.
+        // NOTE: 
+        // - Image names must be unique throughout the program
+        // - Images start at the first column of the sourcecode in the format /ImageName
+        // - End of an image is the start of a new one or a /*
+
+        Function Starting_Main_Report Returns Integer
+            Integer iRetval
+            
+            Forward Get Starting_Main_Report to iRetval
+            
+            Function_Return iRetval
+        End_Function
+
+      
+
+    End_Object
+    
+    On_Key Key_Alt+Key_O Send KeyAction of oOkButton
+  
+
+End_Object

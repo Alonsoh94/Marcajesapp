@@ -6,6 +6,7 @@ Open TipoMarcajeTable
 Open sysemFile
 
 Register_Object TipoMarcajeTable_sl
+Register_Object MarcajeTable_sl
 
 Class cMarcajeTableDataDictionary is a DataDictionary
     
@@ -26,6 +27,7 @@ Class cMarcajeTableDataDictionary is a DataDictionary
         Set Key_Field_State Field MarcajeTable.Codigo to True
         Set Field_Auto_Increment Field MarcajeTable.Codigo to File_Field sysemFile.CodigoMarcaje
         Set Field_Option Field MarcajeTable.Codigo DD_CAPSLOCK to True
+        Set Field_Prompt_Object Field MarcajeTable.Codigo to MarcajeTable_sl
 
         Set Field_Option Field MarcajeTable.EmpleadoCodigo DD_REQUIRED to True
 
@@ -44,5 +46,6 @@ End_Class
 
 #IFDEF Is$WebApp
 #ELSE
+Use MarcajeTable.sl
 Use TipoMarcajeTable.sl
 #ENDIF
