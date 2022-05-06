@@ -2,75 +2,77 @@ Use Windows.pkg
 Use DFRptVw.pkg
 Use DFRpt.pkg
 Use File_Dlg.Pkg
+Use dfEntry.pkg
+Use lista_empleado_sl.sl
 
 Activate_View Activate_R_Marcaje for R_Marcaje
 Object R_Marcaje is a ReportView
     Set Location to 6 6
-    Set Size to 134 246
-    Set Label to "R_Marcaje"
-
-    Object oSaveAsDialog is a SaveAsDialog
-    End_Object
-
-    Procedure StartReport
-        Integer iOutputDevice 
-        Handle hoWorkspace
-        String sFileName sCurrentDirectory sDataPath
-    
-        Get Output_Device_Mode to iOutputDevice
-    
-        Case Begin
-            Case (iOutputDevice = PRINT_TO_WINDOW)
-                Get_Current_Directory to sCurrentDirectory
-                Get phoWorkspace Of ghoApplication to hoWorkspace
-                Get psDataPath Of hoWorkspace to sDataPath
-                Get PathAtIndex Of hoWorkspace sDataPath 1 to sDataPath
-                Set_Directory sDataPath
-                Make_Temp_File "TXT" sFileName
-                Set_Directory sCurrentDirectory
-                If (Right(sDataPath, 1) <> Sysconf(SYSCONF_DIR_SEPARATOR)) Begin
-                    Move (sDataPath - Sysconf(SYSCONF_DIR_SEPARATOR)) To sDataPath
-                End
-                Move (sDataPath - sFileName) to sFileName
-                Set Output_Device_Name to sFileName
-                Case Break
-            
-        Case End
-    
-        Send Run_Report
-    
-        If (iOutputDevice = PRINT_TO_WINDOW) Begin
-            Runprogram Background "NotePad" sFileName
-            EraseFile sFileName
-        End
-    End_Procedure
-    
-    Object oBasicReport is a BasicReport
-        // Set Server To DDOName
-        
-        // Create a new file with the images for the report. Include this filename in the
-        // component with a USE statement. Replace the HeaderSection, BodySection, FooterSection
-        // with the imagenames you've created.
-        // NOTE: 
-        // - Image names must be unique throughout the program
-        // - Images start at the first column of the sourcecode in the format /ImageName
-        // - End of an image is the start of a new one or a /*
-
-        Function Starting_Main_Report Returns Integer
-            Integer iRetval
-            
-            Forward Get Starting_Main_Report to iRetval
-            
-            Function_Return iRetval
-        End_Function
-
-     
-
-    End_Object
-
-    Object TxtReporte is a Form
+    Set Size to 172 246
+    Set Label to "Reporte Marcaje"
+//
+//   Object oSaveAsDialog is a SaveAsDialog
+//   End_Object
+//
+//    Procedure StartReport
+//        Integer iOutputDevice 
+//        Handle hoWorkspace
+//        String sFileName sCurrentDirectory sDataPath
+//    
+//        Get Output_Device_Mode to iOutputDevice
+//    
+//        Case Begin
+//            Case (iOutputDevice = PRINT_TO_WINDOW)
+//                Get_Current_Directory to sCurrentDirectory
+//                Get phoWorkspace of ghoApplication to hoWorkspace
+//                Get psDataPath of hoWorkspace to sDataPath
+//                Get PathAtIndex of hoWorkspace sDataPath 1 to sDataPath
+//                Set_Directory sDataPath
+//                Make_Temp_File "TXT" sFileName
+//                Set_Directory sCurrentDirectory
+//                If (Right(sDataPath, 1) <> Sysconf(SYSCONF_DIR_SEPARATOR)) Begin
+//                    Move (sDataPath - Sysconf(SYSCONF_DIR_SEPARATOR)) to sDataPath
+//                End
+//                Move (sDataPath - sFileName) to sFileName
+//                Set Output_Device_Name to sFileName
+//                Case Break
+//            
+//        Case End
+//    
+//        Send Run_Report
+//    
+//        If (iOutputDevice = PRINT_TO_WINDOW) Begin
+//            Runprogram Background "NotePad" sFileName
+//            EraseFile sFileName
+//        End
+//    End_Procedure
+//    
+//    Object oBasicReport is a BasicReport
+//        // Set Server To DDOName
+//        
+//        // Create a new file with the images for the report. Include this filename in the
+//        // component with a USE statement. Replace the HeaderSection, BodySection, FooterSection
+//        // with the imagenames you've created.
+//        // NOTE: 
+//        // - Image names must be unique throughout the program
+//        // - Images start at the first column of the sourcecode in the format /ImageName
+//        // - End of an image is the start of a new one or a /*
+//
+//        Function Starting_Main_Report Returns Integer
+//            Integer iRetval
+//            
+//            Forward Get Starting_Main_Report to iRetval
+//            
+//            Function_Return iRetval
+//        End_Function
+//
+//     
+//
+//    End_Object
+//
+    Object TxtReporteX is a Form
         Set Size to 13 100
-        Set Location to 36 77
+        Set Location to 20 79
         Set Label to "Seleccionar"
         Set Prompt_Button_Mode to PB_PromptOn
     
@@ -80,11 +82,12 @@ Object R_Marcaje is a ReportView
     //    
     //        Get Value to sValue
     //    End_Procedure
-    Set Prompt_Object to (EmpleadoTable_sl(Current_Object))
+    Set Prompt_Object to (oLista_empleado_sl(Current_Object))
+   // Set Prompt_Object to (LISTAMARCAJESLS(Current_Object))
     
         Procedure Prompt_Callback Integer hSL
-            //Set initial_column of hSL to 0
-           // Set export_column of hSL to 0
+            Set initial_column of hSL to 0
+            Set export_column of hSL to 0
             
 
         End_Procedure
@@ -92,7 +95,7 @@ Object R_Marcaje is a ReportView
     End_Object
     Object BtnGenerarReporte is a Button
         Set Size to 14 100
-        Set Location to 67 78
+        Set Location to 145 15
         Set Label to "Generar Reporte"
     
         // fires when the button is clicked
@@ -104,13 +107,12 @@ Object R_Marcaje is a ReportView
     
      // Procedimiento para dar inicio a la generacion del reporte
     Procedure GenerarRerporte
-        String sDatoGenerador
+        Integer sDatoGenerador
         
-        Move '' to sDatoGenerador  // asignamos valor vacio a nuestra variable
-        Get Value of TxtReporte to sDatoGenerador // TxtReporte es la caja de texto en nuestro form. traemos us valor y lo asignamos a nuestro sDatoGenerador
-        
+        Move 0 to sDatoGenerador  // asignamos valor vacio a nuestra variable
+        Get Value of (TxtReporteX(Current_Object)) item 0 to sDatoGenerador// TxtReporte es la caja de texto en nuestro form. traemos us valor y lo asignamos a nuestro sDatoGenerador
         //Creamos una condicion para verificar que sDatoGenerador no este vacio
-        If (Trim(sDatoGenerador)) ne '' Begin
+        If (Trim(sDatoGenerador)) ne 0 Begin
             Clear MarcajeTable  //tabla
             Move (Trim(sDatoGenerador)) to MarcajeTable.Codigo  //atributo codiog de la tabla Marcajestable
             Find eq MarcajeTable by Index.1   // busca segun el indice
@@ -125,41 +127,152 @@ Object R_Marcaje is a ReportView
         Send Run_Report to (ReporteMarcajesObject(Current_Object))
     End_Procedure
     
-   Object ReporteMarcajesObject is a WinQLReport  //Creamos el objeto
+   Object ReporteMarcajesObject is a WinQLReport  //Creamos el objeto WinQLReport
         Set Output_Destination to WQL_PRINT_TO_WINDOW   // enviar la impresion de pantalla
         
         Procedure OnInitializeReport
-            
-            String var_MarcajesTable var_Parametros var_Seleccion      // declaracion de variable
-            
-            Move '' to var_MarcajesTable  // asignamos un valor vacio
+             Local String var_Parametros
+             Local Integer var_MarcajesTable        // declaracion de variable
+             Local String var_Seleccion
             
             Forward Send OnInitializeReport  // lanzamos el iniciador del reporte
             
-            Get Value of TxtReporte to var_MarcajesTable  // obtenes el valor de la caja de texto y lo asignamos a la variable
+            Move 0 to var_MarcajesTable  // asignamos un valor vacio
             
+          //  Get Value of (TxtReporteX(Current_Object)) item 0 to var_MarcajesTable  // obtenes el valor de la caja de texto y lo asignamos a la variable
+            Get Value of TxtReporteX to var_MarcajesTable
             Move '' to var_Parametros // asignamos vacio a parametros
             
             // Validamos que el lo que se le asigno a var_Marcajes no haya sido un dato vacio
-            If (var_MarcajesTable ne '') Begin
-                Move '' to var_Seleccion // asignamos vacio
-                Append var_Seleccion '{MarcajeTable.Codigo} =' ('"'+var_MarcajesTable+'"')  // adjuntamos la seleccion con el valor asignado
+            If (var_MarcajesTable ne 0) Begin
+                //Move 0 to var_Seleccion // asignamos vacio
+                Append var_Seleccion '{MarcajeTable.Codigo} = ' ('"'+var_MarcajesTable+'"')  // adjuntamos la seleccion con el valor asignado
+                //Append var_Seleccion '{MarcajeTable.Codigo} = ' (var_MarcajesTable)
             End
             
             Append var_Parametros '"'
-            Append var_Parametros 'LISTA DE MARCAJES"'
+            Append var_Parametros 'LISTA DE MARCAJES DE TRABAJADORES"'
             
      
             Set SelectionFormula to var_Seleccion
             Set Formula "Titulo" to var_Parametros
                 
             
-            
-            
         End_Procedure
        
     
    End_Object
+
+    Object GrupoFechas is a Group
+        Set Size to 30 122
+        Set Location to 108 119
+        Set Label to "Rango de Fechas"
+        Set Color to clWhite
+        Set Bitmap_Style to Bitmap_Tile
+
+        Object TxtFechaDe is a Form
+            Set Size to 13 44
+            Set Location to 13 12
+            Set Label to "De"
+            Set Label_Col_Offset to 10
+        
+            // OnChange is called on every changed character
+        //    Procedure OnChange
+        //        String sValue
+        //    
+        //        Get Value to sValue
+        //    End_Procedure
+        
+        End_Object
+
+        Object TxtFechaA is a Form
+            Set Size to 13 44
+            Set Location to 13 71
+            Set Label to "A"
+            Set Label_Col_Offset to 10
+        
+            // OnChange is called on every changed character
+        //    Procedure OnChange
+        //        String sValue
+        //    
+        //        Get Value to sValue
+        //    End_Procedure
+        
+        End_Object
+    End_Object
+
+    Object oRadioGroup1 is a RadioGroup
+        Set Location to 46 16
+        Set Size to 93 101
+        Set Label to "GENERAR REPORTE POR"
+        Set Color to clWhite
+    
+        Object OpRegistroUnico is a Radio
+            Set Label to "Codigo de Registro"
+            Set Size to 10 61
+            Set Location to 20 13
+            Set Color to clWhite
+        End_Object
+    
+        Object OpCodigoEmpleado is a Radio
+            Set Label to "Codigo Empleado"
+            Set Size to 10 61
+            Set Location to 35 13
+            Set Color to clWhite
+        End_Object
+    
+        Object OpNacionalidad is a Radio
+            Set Label to "Nacionalidad"
+            Set Size to 10 61
+            Set Location to 51 13
+            Set Color to clWhite
+        End_Object
+    
+        Procedure Notify_Select_State Integer iToItem Integer iFromItem
+            Forward Send Notify_Select_State iToItem iFromItem
+            // for augmentation
+        End_Procedure
+
+        Object OpFechas is a Radio
+            Set Label to "Fechas"
+            Set Size to 10 61
+            Set Location to 66 13
+            Set Color to clWhite
+
+            Procedure OnChange
+                Forward Send OnChange
+                
+     
+            End_Procedure
+
+            Procedure Mouse_Click Integer iWindowNumber Integer iPosition
+                Forward Send Mouse_Click iWindowNumber iPosition
+                If (OpFechas = True) Begin
+                    Set Visible_State of TxtFechaDe to True
+                    Set Visible_State of TxtFechaA to True
+                    Set Visible_State of GrupoFechas to True
+                    
+                End                
+                Else Begin
+                    Set Visible_State of TxtFechaDe to False
+                    Set Visible_State of TxtFechaA to False
+                    Set Visible_State of GrupoFechas to False
+                End
+            End_Procedure
+        End_Object
+    
+        // If you set Current_Radio, you must set it AFTER the
+        // radio objects have been created AND AFTER Notify_Select_State has been
+        // created. i.e. Set in bottom-code of object at the end!!
+    //    Set Current_Radio to 0
+    
+    End_Object
+    
+    
+    
+    
+    
+    
     
    
 
