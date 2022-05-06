@@ -4403,16 +4403,15 @@ Including file: lista_empleado_sl.sl    (C:\DataFlex Projects\MARCAJESAPP\AppSrc
 78346>>>
 78346>>>            Procedure Mouse_Click Integer iWindowNumber Integer iPosition
 78349>>>                Forward Send Mouse_Click iWindowNumber iPosition
-78351>>>                If (OpFechas = True) Begin
-78353>>>                    Set Visible_State of TxtFechaDe to True
+78351>>>                If (OpFechas eq True) Begin
+78353>>>                    Set Visible_State of TxtFechaDe to False
 78354>>>                    Set Visible_State of TxtFechaA to True
 78355>>>                    Set Visible_State of GrupoFechas to True
 78356>>>                    
-78356>>>                End 
+78356>>>                End                
 78356>>>>
-78356>>>                
 78356>>>                Else Begin
-78357>>>                    Set Visible_State of TxtFechaDe to False
+78357>>>                    Set Visible_State of TxtFechaDe to True
 78358>>>                    Set Visible_State of TxtFechaA to False
 78359>>>                    Set Visible_State of GrupoFechas to False
 78360>>>                End

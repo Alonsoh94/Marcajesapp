@@ -247,17 +247,13 @@ Object R_Marcaje is a ReportView
 
             Procedure Mouse_Click Integer iWindowNumber Integer iPosition
                 Forward Send Mouse_Click iWindowNumber iPosition
-                If (OpFechas = True) Begin
-                    Set Visible_State of TxtFechaDe to True
+                If (OpFechas eq True) Begin
+                    Set Visible_State of TxtFechaDe to False
                     Set Visible_State of TxtFechaA to True
                     Set Visible_State of GrupoFechas to True
                     
                 End                
-                Else Begin
-                    Set Visible_State of TxtFechaDe to False
-                    Set Visible_State of TxtFechaA to False
-                    Set Visible_State of GrupoFechas to False
-                End
+               
             End_Procedure
         End_Object
     
