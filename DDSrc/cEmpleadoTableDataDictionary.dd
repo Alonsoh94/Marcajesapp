@@ -1,0 +1,55 @@
+Use DataDict.pkg
+
+Open EmpleadoTable
+Open Nacionalidad
+Open sysemFile
+Open MarcajeTable
+
+Register_Object EmpleadoTable_sl
+Register_Object Nacionalidad_sl
+
+Class cEmpleadoTableDataDictionary is a DataDictionary
+    
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Main_File to EmpleadoTable.File_Number
+
+        Set Add_Client_File to MarcajeTable.File_Number
+
+        Set Add_System_File to sysemFile.File_Number DD_Lock_On_All
+
+        Set Add_Server_File to Nacionalidad.File_Number
+
+        Set Foreign_Field_Option DD_KEYFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_KEYFIELD DD_FINDREQ to True
+        Set Foreign_Field_Option DD_INDEXFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_DEFAULT DD_DISPLAYONLY to True
+
+        Set Key_Field_State Field EmpleadoTable.Codigo to True
+        Set Field_Auto_Increment Field EmpleadoTable.Codigo to File_Field sysemFile.CodigoEmpleado
+        Set Field_Prompt_Object Field EmpleadoTable.Codigo to EmpleadoTable_sl
+
+        Set Field_Option Field EmpleadoTable.PrimerNombre DD_CAPSLOCK to True
+        Set Field_Option Field EmpleadoTable.PrimerNombre DD_REQUIRED to True
+
+        Set Field_Option Field EmpleadoTable.SegundoNombre DD_CAPSLOCK to True
+        Set Field_Option Field EmpleadoTable.SegundoNombre DD_REQUIRED to True
+
+        Set Field_Option Field EmpleadoTable.PrimerApellido DD_CAPSLOCK to True
+        Set Field_Option Field EmpleadoTable.PrimerApellido DD_REQUIRED to True
+
+        Set Field_Option Field EmpleadoTable.SegundoApellido DD_CAPSLOCK to True
+        Set Field_Option Field EmpleadoTable.SegundoApellido DD_REQUIRED to True
+        Set Field_Option Field EmpleadoTable.Nacionalidad DD_CAPSLOCK to True
+        Set Field_Prompt_Object Field EmpleadoTable.Nacionalidad to Nacionalidad_sl
+        Set Field_Option Field EmpleadoTable.Nacionalidad DD_REQUIRED to True
+
+    End_Procedure
+
+End_Class
+
+#IFDEF Is$WebApp
+#ELSE
+Use Nacionalidad.sl
+Use EmpleadoTable.sl
+#ENDIF

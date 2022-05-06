@@ -1,0 +1,8 @@
+#REPLACE FILE2 EmpleadoTable
+#REPLACE EmpleadoTable.File_Number |CI2
+#REPLACE EmpleadoTable.Codigo |FN2,1
+#REPLACE EmpleadoTable.PrimerNombre |FS2,2
+#REPLACE EmpleadoTable.SegundoNombre |FS2,3
+#REPLACE EmpleadoTable.PrimerApellido |FS2,4
+#REPLACE EmpleadoTable.SegundoApellido |FS2,5
+#REPLACE EmpleadoTable.Nacionalidad |FN2,6

@@ -1,0 +1,6 @@
+#REPLACE FILE1 sysemFile
+#REPLACE sysemFile.Recnum |FN1,0
+#REPLACE sysemFile.CodigoEmpleado |FN1,1
+#REPLACE sysemFile.CodigoNacionalidad |FN1,2
+#REPLACE sysemFile.CodigoTipoMarcaje |FN1,3
+#REPLACE sysemFile.CodigoMarcaje |FN1,4

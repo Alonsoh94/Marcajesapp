@@ -1,0 +1,4 @@
+#REPLACE FILE4 TipoMarcajeTable
+#REPLACE TipoMarcajeTable.File_Number |CI4
+#REPLACE TipoMarcajeTable.Codigo |FN4,1
+#REPLACE TipoMarcajeTable.TipoMarcaje |FS4,2

@@ -1,0 +1,7 @@
+#REPLACE FILE5 MarcajeTable
+#REPLACE MarcajeTable.File_Number |CI5
+#REPLACE MarcajeTable.Codigo |FN5,1
+#REPLACE MarcajeTable.EmpleadoCodigo |FN5,2
+#REPLACE MarcajeTable.FechaMarcaje |FD5,3
+#REPLACE MarcajeTable.HoraMarcaje |FS5,4
+#REPLACE MarcajeTable.TipoMarcaje |FN5,5

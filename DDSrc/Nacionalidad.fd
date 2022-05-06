@@ -1,0 +1,4 @@
+#REPLACE FILE3 Nacionalidad
+#REPLACE Nacionalidad.File_Number |CI3
+#REPLACE Nacionalidad.CodigoNacionalidad |FN3,1
+#REPLACE Nacionalidad.Pais |FS3,2

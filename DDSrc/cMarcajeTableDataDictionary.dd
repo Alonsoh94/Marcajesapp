@@ -1,0 +1,48 @@
+Use DataDict.pkg
+
+Open MarcajeTable
+Open EmpleadoTable
+Open TipoMarcajeTable
+Open sysemFile
+
+Register_Object TipoMarcajeTable_sl
+
+Class cMarcajeTableDataDictionary is a DataDictionary
+    
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        Set Main_File to MarcajeTable.File_Number
+
+        Set Add_System_File to sysemFile.File_Number DD_Lock_On_All
+
+        Set Add_Server_File to EmpleadoTable.File_Number
+        Set Add_Server_File to TipoMarcajeTable.File_Number
+
+        Set Foreign_Field_Option DD_KEYFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_KEYFIELD DD_FINDREQ to True
+        Set Foreign_Field_Option DD_INDEXFIELD DD_NOPUT to True
+        Set Foreign_Field_Option DD_DEFAULT DD_DISPLAYONLY to True
+
+        Set Key_Field_State Field MarcajeTable.Codigo to True
+        Set Field_Auto_Increment Field MarcajeTable.Codigo to File_Field sysemFile.CodigoMarcaje
+        Set Field_Option Field MarcajeTable.Codigo DD_CAPSLOCK to True
+
+        Set Field_Option Field MarcajeTable.EmpleadoCodigo DD_REQUIRED to True
+
+        Set Field_Option Field MarcajeTable.FechaMarcaje DD_CAPSLOCK to True
+        Set Field_Option Field MarcajeTable.FechaMarcaje DD_REQUIRED to True
+
+        Set Field_Option Field MarcajeTable.HoraMarcaje DD_CAPSLOCK to True
+        Set Field_Option Field MarcajeTable.HoraMarcaje DD_REQUIRED to True
+
+        Set Field_Prompt_Object Field MarcajeTable.TipoMarcaje to TipoMarcajeTable_sl
+        Set Field_Option Field MarcajeTable.TipoMarcaje DD_REQUIRED to True
+
+    End_Procedure
+
+End_Class
+
+#IFDEF Is$WebApp
+#ELSE
+Use TipoMarcajeTable.sl
+#ENDIF
