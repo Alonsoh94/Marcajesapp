@@ -43,42 +43,29 @@ Object R_Marcaje is a ReportView
     //***** CONDIGIONES PARA GENERAR
     Procedure CodicionesOpciones
         If (Checked_State(OpRegistroUnico) = True) Begin  
-            If (TxtReporteX ne Integer) Begin
-                Send Info_Box 'No ha realizado ninguna seleccion'        
-            End
-            Else Begin
+            
                 Send GenerarRerporte
-            End
-             
+          
         End
         
         If (Checked_State(OpNacionalidad) = True) Begin
             
-            If (TxtReporteX ne Integer) Begin
-                Send Info_Box 'No ha realizado ninguna seleccion'        
-            End
-            Else Begin
+           
                Send GenerarRerporteNacionalidad 
-            End            
-                       
+             
         End
         
         If (Checked_State(OpCodigoEmpleado) = True) Begin  
             
-             If (TxtReporteX ne Integer) Begin
-                Send Info_Box 'No ha realizado ninguna seleccion'        
-            End
-            Else Begin
+             
                Send GenerarRerporteEmpleado 
-            End           
-                       
+                
         End
         
          If (Checked_State(OpFechas) = True) Begin            
                        
                 Send  GenerarRerporteRangoFechas
-           
-           
+                      
         End
         
         
@@ -103,17 +90,19 @@ Object R_Marcaje is a ReportView
         
         Move 0 to sDatoGenerador  // asignamos valor vacio a nuestra variable
         Get Value of (TxtReporteX(Current_Object)) item 0 to sDatoGenerador// TxtReporte es la caja de texto en nuestro form. traemos us valor y lo asignamos a nuestro sDatoGenerador
-        //Creamos una condicion para verificar que sDatoGenerador no este vacio
-        If (Trim(sDatoGenerador)) ne 0 Begin
-            Clear MarcajeTable  //tabla
-            Move (Trim(sDatoGenerador)) to MarcajeTable.Codigo  //atributo codiog de la tabla Marcajestable
-            Find eq MarcajeTable by Index.1   // busca segun el indice
-            If [not Found] Begin
-                Error 200 'Ingrese un Marcaje Valido' // si no se encuentra que retorne el mensaje
-                Procedure_Return // retorna el procedimienot para hacer uso del sisema
+        
+        //Creamos una condicion para verificar que sDatoGenerador no este vacio        
+            If (Trim(sDatoGenerador)) ne 0 Begin
+                Clear MarcajeTable  //tabla
+                Move (Trim(sDatoGenerador)) to MarcajeTable.Codigo  //atributo codiog de la tabla Marcajestable
+                Find eq MarcajeTable by Index.1   // busca segun el indice
+                If [not Found] Begin
+                    //Send Info_Box 'Ingrese un Marcaje Valido'
+                    Error 200 'Ingrese un Marcaje Valido' // si no se encuentra que retorne el mensaje
+                    Procedure_Return // retorna el procedimienot para hacer uso del sisema
+                End
             End
-        End
-   
+       
    
         Set Report_Name of (ReporteMarcajesObject(Current_Object)) to "ReporteMarcajes.rpt"
         Send Run_Report to (ReporteMarcajesObject(Current_Object))
