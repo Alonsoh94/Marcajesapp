@@ -4,15 +4,18 @@ Use DFRpt.pkg
 Use File_Dlg.Pkg
 Use dfEntry.pkg
 Use lista_empleado_sl.sl
+Use ListaNacionalidadesPromp.sl
+Use EmpleadoLookUp.sl
+
 
 Activate_View Activate_R_Marcaje for R_Marcaje
 Object R_Marcaje is a ReportView
-    Set Location to 6 6
-    Set Size to 172 246
-    Set Label to "Reporte Marcaje"
+    Set Location to 3 4
+    Set Size to 194 364
+    Set Label to "AAAA          MM          DD"
 
     Object TxtReporteX is a Form
-        Set Size to 18 118
+        Set Size to 15 118
         Set Location to 75 122
         Set Prompt_Button_Mode to PB_PromptOn
     
@@ -22,11 +25,11 @@ Object R_Marcaje is a ReportView
     //    
     //        Get Value to sValue
     //    End_Procedure
-    Set Prompt_Object to (oLista_empleado_sl(Current_Object))
+   // Set Prompt_Object to (oLista_empleado_sl(Current_Object))
         Set Label_Col_Offset to 40
         Set Color to clInactiveBorder
         Set Label_Justification_Mode to JMode_Top
-   // Set Prompt_Object to (LISTAMARCAJESLS(Current_Object))
+   Set Prompt_Object to (LISTAMARCAJESLS(Current_Object))
     
         Procedure Prompt_Callback Integer hSL
             Set initial_column of hSL to 0
@@ -39,16 +42,48 @@ Object R_Marcaje is a ReportView
     
     //***** CONDIGIONES PARA GENERAR
     Procedure CodicionesOpciones
-        If (OpRegistroUnico(Current_Object) = True) Begin
-            Set Prompt_Object to (oLista_empleado_sl(Current_Object))
-             Send GenerarRerporte
+        If (Checked_State(OpRegistroUnico) = True) Begin  
+            If (TxtReporteX ne Integer) Begin
+                Send Info_Box 'No ha realizado ninguna seleccion'        
+            End
+            Else Begin
+                Send GenerarRerporte
+            End
+             
         End
         
-        If (OpNacionalidad(Current_Object) = True) Begin
-            Set Prompt_Object to (Nacionalidad_sl(Current_Object))
-            Send GenerarRerporteNacionalidad
+        If (Checked_State(OpNacionalidad) = True) Begin
             
+            If (TxtReporteX ne Integer) Begin
+                Send Info_Box 'No ha realizado ninguna seleccion'        
+            End
+            Else Begin
+               Send GenerarRerporteNacionalidad 
+            End            
+                       
         End
+        
+        If (Checked_State(OpCodigoEmpleado) = True) Begin  
+            
+             If (TxtReporteX ne Integer) Begin
+                Send Info_Box 'No ha realizado ninguna seleccion'        
+            End
+            Else Begin
+               Send GenerarRerporteEmpleado 
+            End           
+                       
+        End
+        
+         If (Checked_State(OpFechas) = True) Begin            
+                       
+                Send  GenerarRerporteRangoFechas
+           
+           
+        End
+        
+        
+        
+        
     End_Procedure
     Object BtnGenerarReporte is a Button
         Set Size to 14 100
@@ -121,19 +156,27 @@ Object R_Marcaje is a ReportView
    End_Object
 
     Object GrupoFechas is a Group
-        Set Size to 30 122
-        Set Location to 108 119
-        Set Label to "Rango de Fechas"
+        Set Size to 55 142
+        Set Location to 106 118
+        Set Label to "Seleccione un rango de fecha"
         Set Color to clWhite
         Set Bitmap_Style to Bitmap_Tile
         Set Visible_State to False
 
+        Object oTextBox1 is a TextBox
+            Set Size to 10 41
+            Set Location to 37 23
+            Set Label to "dd/mm/aaaa"
+            Set Color to clWhite
+            Set TextColor to clGrayText
+        End_Object
+
         Object TxtFechaDe is a Form
-            Set Size to 13 44
-            Set Location to 13 12
+            Set Size to 13 46
+            Set Location to 23 23
             Set Label to "De"
             Set Label_Col_Offset to 10
-            Set Visible_state to False
+            Set Form_Datatype item 0 to Mask_Date_Window   // con esto convertimos el campo en campo fecha
         
             // OnChange is called on every changed character
         //    Procedure OnChange
@@ -145,11 +188,11 @@ Object R_Marcaje is a ReportView
         End_Object
 
         Object TxtFechaA is a Form
-            Set Size to 13 44
-            Set Location to 13 71
+            Set Size to 13 46
+            Set Location to 23 82
             Set Label to "A"
             Set Label_Col_Offset to 10
-            Set Visible_state to False
+            Set Form_Datatype item 0 to Mask_Date_Window   // con esto convertimos el campo en campo fecha
         
             // OnChange is called on every changed character
         //    Procedure OnChange
@@ -158,6 +201,14 @@ Object R_Marcaje is a ReportView
         //        Get Value to sValue
         //    End_Procedure
         
+        End_Object
+
+        Object oTextBox1 is a TextBox
+            Set Size to 10 41
+            Set Location to 37 85
+            Set Label to "dd/mm/aaaa"
+            Set Color to clWhite
+            Set TextColor to clGrayText
         End_Object
     End_Object
 
@@ -169,21 +220,38 @@ Object R_Marcaje is a ReportView
     
         Object OpRegistroUnico is a Radio
             Set Label to "Codigo de Registro"
-            Set Size to 10 61
+            Set Size to 10 71
             Set Location to 20 13
             Set Color to clWhite
 
             Procedure OnChange
                 Forward Send OnChange
-                Send CodicionesOpciones
+                If (Checked_State(Current_Object) = True) Begin
+                   Set Prompt_Object of TxtReporteX to (oLista_empleado_sl(Current_Object)) 
+                   Set Value of TxtReporteX to ""
+                   //Set Prompt_Object to (oLista_empleado_sl(Current_Object))
+                  //Set Type_Value of TxtFechaA to Date_Window
+                End
+                
             End_Procedure
+
+            
         End_Object
     
         Object OpCodigoEmpleado is a Radio
             Set Label to "Codigo Empleado"
-            Set Size to 10 61
+            Set Size to 10 73
             Set Location to 35 13
             Set Color to clWhite
+
+            Procedure OnChange
+                Forward Send OnChange
+                If (Checked_State(Current_Object) = True) Begin
+                   Set Prompt_Object of TxtReporteX to (EmpleadoLookUp(Current_Object))
+                   Set Value of TxtReporteX to ""
+                End
+                
+            End_Procedure
         End_Object
     
         Object OpNacionalidad is a Radio
@@ -194,7 +262,19 @@ Object R_Marcaje is a ReportView
 
             Procedure OnChange
                 Forward Send OnChange
-                Send CodicionesOpciones
+                //Send CodicionesOpciones
+                If (Checked_State(Current_Object) = True) Begin
+                   Set Prompt_Object of TxtReporteX to (ListaNacionalidadesPromp(Current_Object))
+                   Set Value of TxtReporteX to ""
+                End
+                 
+                // Set Prompt_Object to (oLista_empleado_sl(Current_Object))
+                 
+            End_Procedure
+
+            Procedure Mouse_Click Integer iWindowNumber Integer iPosition
+                Forward Send Mouse_Click iWindowNumber iPosition
+               // Set Prompt_Object to (Nacionalidad_sl(Current_Object))
             End_Procedure
         End_Object
     
@@ -211,18 +291,23 @@ Object R_Marcaje is a ReportView
 
             Procedure OnChange
                 Forward Send OnChange
-                If (Checked_State(Current_Object) = True) Begin
-                 //Set Value of TxtFechaA to "activo"
-                 Set Visible_State of GrupoFechas to True
-                 Set Visible_State of TxtFechaDe to  True
-                 Set Visible_State of TxtFechaA to True
-                End
-                Else Begin
-                  Set Visible_State of GrupoFechas to False
-                  Set Visible_State of TxtFechaDe to False
-                  Set Visible_State of TxtFechaA to False
+               If (Checked_State(Current_Object) = True) Begin
+              //Set Value of TxtFechaA to "activo"
+               Set Visible_State of GrupoFechas to True
+               Set Visible_State of TxtFechaDe to  True
+               Set Visible_State of TxtFechaA to True
+              End
+              Else Begin
+                Set Visible_State of GrupoFechas to False
+                Set Visible_State of TxtFechaDe to False
+                Set Visible_State of TxtFechaA to False
+              
+              End
+              
+               Set Value of TxtFechaDe to ""
+               Set Value of TxtFechaA to ""
                 
-                End
+                
             End_Procedure
 
             
@@ -237,7 +322,7 @@ Object R_Marcaje is a ReportView
     
     
     
-    
+   
     //*********************----------------
     
       // Procedimiento para dar inicio a la generacion del reporte por NACIONALIDAD
@@ -248,7 +333,7 @@ Object R_Marcaje is a ReportView
         Get Value of (TxtReporteX(Current_Object)) item 0 to sDatoGenerador// TxtReporte es la caja de texto en nuestro form. traemos us valor y lo asignamos a nuestro sDatoGenerador
         //Creamos una condicion para verificar que sDatoGenerador no este vacio
         If (Trim(sDatoGenerador)) ne 0 Begin
-            Clear MarcajeTable  //tabla
+            Clear Nacionalidad  //tabla
             Move (Trim(sDatoGenerador)) to Nacionalidad.CodigoNacionalidad  //atributo codiog de la tabla Marcajestable
             Find eq MarcajeTable by Index.1   // busca segun el indice
             If [not Found] Begin
@@ -302,14 +387,182 @@ Object R_Marcaje is a ReportView
     
     //-----------*************************
     
+        
+    //*********************----------------    GENERAR REPORTE POR EMPLEADO
     
-    
-    
-    
-    
-    
-    
-    
+      // Procedimiento para dar inicio a la generacion del reporte por NACIONALIDAD
+    Procedure GenerarRerporteEmpleado
+        Integer sDatoGenerador
+        
+        Move 0 to sDatoGenerador  // asignamos valor vacio a nuestra variable
+        Get Value of (TxtReporteX(Current_Object)) item 0 to sDatoGenerador// TxtReporte es la caja de texto en nuestro form. traemos us valor y lo asignamos a nuestro sDatoGenerador
+        //Creamos una condicion para verificar que sDatoGenerador no este vacio
+        If (Trim(sDatoGenerador)) ne 0 Begin
+            Clear EmpleadoTable  //tabla
+            Move (Trim(sDatoGenerador)) to EmpleadoTable.Codigo  //atributo codiog de la tabla Marcajestable
+            Find eq EmpleadoTable by Index.1   // busca segun el indice
+            If [not Found] Begin
+                Error 200 'Ingrese un codigo de empleado Valido' // si no se encuentra que retorne el mensaje
+                Procedure_Return // retorna el procedimienot para hacer uso del sisema
+            End
+        End
    
-
+   
+        Set Report_Name of (ReporteMarcajesObjectEmpleado(Current_Object)) to "ReporteMarcajes.rpt"
+        Send Run_Report to (ReporteMarcajesObjectEmpleado(Current_Object))
+    End_Procedure
+    
+    
+    
+     Object ReporteMarcajesObjectEmpleado is a WinQLReport  //Creamos el objeto WinQLReport
+        Set Output_Destination to WQL_PRINT_TO_WINDOW   // enviar la impresion de pantalla
+        
+        Procedure OnInitializeReport
+             Local String var_Parametros
+             Local Integer var_MarcajesTable        // declaracion de variable
+             Local String var_Seleccion
+            
+            Forward Send OnInitializeReport  // lanzamos el iniciador del reporte
+            
+            Move 0 to var_MarcajesTable  // asignamos un valor vacio
+            
+          //  Get Value of (TxtReporteX(Current_Object)) item 0 to var_MarcajesTable  // obtenes el valor de la caja de texto y lo asignamos a la variable
+            Get Value of TxtReporteX to var_MarcajesTable
+            Move '' to var_Parametros // asignamos vacio a parametros
+            
+            // Validamos que el lo que se le asigno a var_Marcajes no haya sido un dato vacio
+            If (var_MarcajesTable ne 0) Begin
+                //Move 0 to var_Seleccion // asignamos vacio
+                Append var_Seleccion '{EmpleadoTable.Codigo} = ' ('"'+var_MarcajesTable+'"')  // adjuntamos la seleccion con el valor asignado
+                //Append var_Seleccion '{MarcajeTable.Codigo} = ' (var_MarcajesTable)
+            End
+            
+            Append var_Parametros '"'
+            Append var_Parametros 'LISTA DE MARCAJES DE TRABAJADORES POR EMPLEADO"'
+            
+     
+            Set SelectionFormula to var_Seleccion
+            Set Formula "Titulo" to var_Parametros
+                
+            
+        End_Procedure
+       
+    
+   End_Object
+    
+    //-----------*************************
+    
+    
+    
+    
+    //*********************----------------    REPORTE POR RANGO DE FECHAS 
+    
+      
+    Procedure GenerarRerporteRangoFechas
+        
+       Global_Variable Date @FechaInicial
+       Global_Variable Date @FechaFinal
+       Global_Variable Date @FechaConteo
+        
+        Indicate AceptarFecha True
+        
+        Move ("01/01/1900") to @FechaConteo
+        //Move ("1900/01/01") to @FechaConteo
+        
+        Get Value of TxtFechaDe to @FechaInicial
+        Get Value of TxtFechaA to @FechaFinal
+        
+         If (@FechaInicial <> '' or @FechaFinal <> '') Begin
+            If ( (@FechaInicial < @FechaConteo) or (@FechaFinal < @FechaConteo)) Begin 
+            Error 200 'Ingrese Fechas V lidas'
+            Indicate AceptarFecha False
+        End
+        Else If (@FechaInicial > @FechaFinal ) Begin
+             Error 200 'FECHA INICIAL NO PUEDE SER MAYOR A FECHA FINAL'
+            Indicate AceptarFecha False            
+        End
+        Else If (@FechaFinal >= @FechaInicial ) Begin
+            [ AceptarFecha ] Send Run_Report to (ReporteFiltroFechas(Current_Object))
+        End
+         //*****--++++++++++
+         End
+         Else Begin
+            Send Info_Box 'Las Fechas son Requeridas'
+         End
+        
+        
+        If (@FechaInicial <> '' or @FechaFinal <> '') Begin
+            Set Report_Name of (ReporteFiltroFechas(Current_Object)) to "ReporteMarcajes.rpt"
+            Send Run_Report to (ReporteFiltroFechas(Current_Object))
+        End
+     
+        
+    End_Procedure
+    
+    Object ReporteFiltroFechas is a WinQLReport
+        
+       // Set Report_name to "S3002D.rpt"
+        Set Output_Destination to WQL_PRINT_TO_WINDOW
+        
+       
+        
+        Procedure OnInitializeReport
+            
+            Date FechaInicialX
+            Date FechaFinalX
+            Date FechaConteoX
+            String var_Parametros
+            String SeleccionX
+            String SubFechaInicial
+            String SubFechaFinal            
+            
+            
+            Get Value of TxtFechaDe to FechaInicialX
+            Get Value of TxtFechaA to FechaFinalX
+           
+            Append SubFechaInicial (Mid(FechaInicialX,4,7))
+            Append SubFechaInicial '-'
+            Append SubFechaInicial (Mid(FechaInicialX,2,4))
+            Append SubFechaInicial '-'
+            Append SubFechaInicial (Mid(FechaInicialX,2,1))
+            
+            Append SubFEchaFinal (Mid(FechaFinalX,4,7))
+            Append SubFEchaFinal '-'
+            Append SubFEchaFinal (Mid(FechaFinalX,2,4))
+            Append SubFEchaFinal '-'
+            Append SubFEchaFinal (Mid(FechaFinalX,2,1))
+            
+           
+          
+            
+            Forward Send OninitializeReport
+            
+            Clear MarcajeTable
+            If (AceptarFecha = True) Begin
+                
+               // Append @Seleccion '{MarcajeTable.FechaMarcaje} >= Date'  ('"'+@FechaInicial+'"') // ' And {MarcajeTable.FechaMarcaje} <= Date' ('"'+@FechaFinal+'"')
+                Append SeleccionX '{MarcajeTable.FechaMarcaje} in "'
+                Append SeleccionX SubFechaInicial
+                Append SeleccionX '" to "'
+                Append SeleccionX SubFechaFinal
+                Append SeleccionX '"'
+                
+            End
+            
+           Append var_Parametros '"'
+            Append var_Parametros 'LISTA DE MARCAJES POR FECHA"'
+            
+     
+            Set SelectionFormula to SeleccionX
+            Set Formula "Titulo" to var_Parametros
+            
+            
+        End_Procedure
+    End_Object
+        
+      
+       
+  
 End_Object
+
+  

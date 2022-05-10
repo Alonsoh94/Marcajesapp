@@ -1,63 +1,70 @@
 [Workspace]
-CurrentProject=JUEVESAPPMARCAJES.src [file not found]
+CurrentProject=APPMARCAJESCR.src
 Location=C:\DataFlex Projects\MARCAJESAPP\IdeSrc\Jose Alonso_Studio.dsk
-CreateNew=1
+CreateNew=2
 [TabWindows]
 GroupCount=1
 HorizontalGroups=1
 [TabGroup0]
 GroupSize=40
-SelectedTab=4
+SelectedTab=2
 [Window0]
 Filename=Workspace Dashboard
 ViewType=101
 Top=24
 Left=4
 Bottom=543
-Right=1080
+Right=975
 TabIndex=0
 TabGroup=0
 [Window1]
-Filename=C:\DataFlex Projects\MARCAJESAPP\AppSrc\MARCAJES.rv
+Filename=C:\Users\Jose Alonso\Downloads\S3002.RV
 ViewType=1
 Top=24
 Left=4
 Bottom=543
-Right=1080
-CursorLine=164
-CursorColumn=13
+Right=975
+CursorLine=335
+CursorColumn=53
 TabIndex=1
 TabGroup=0
 [Window2]
+Filename=C:\DataFlex Projects\MARCAJESAPP\AppSrc\R_Marcaje.rv
+ViewType=2
+Top=24
+Left=4
+Bottom=543
+Right=975
+TabIndex=3
+TabGroup=0
+[Window3]
+Filename=C:\DataFlex Projects\MARCAJESAPP\DDSrc\cEmpleadoTableDataDictionary.dd
+ViewType=3
+Top=24
+Left=4
+Bottom=543
+Right=975
+TabIndex=4
+TabGroup=0
+[Window4]
+Filename=C:\Program Files (x86)\DataFlex 18.2\Pkg\CrystalReport.pkg
+ViewType=1
+Top=24
+Left=4
+Bottom=543
+Right=975
+CursorLine=5006
+CursorColumn=0
+TabIndex=5
+TabGroup=0
+[Window5]
 Filename=C:\DataFlex Projects\MARCAJESAPP\AppSrc\R_Marcaje.rv
 ViewType=1
 Top=24
 Left=4
 Bottom=543
-Right=1080
-CursorLine=100
+Right=975
+CursorLine=198
 CursorColumn=0
 TabIndex=2
-TabGroup=0
-[Window3]
-Filename=C:\DataFlex Projects\MARCAJESAPP\AppSrc\Prueba.rv
-ViewType=1
-Top=24
-Left=4
-Bottom=543
-Right=1080
-CursorLine=71
-CursorColumn=2
-TabIndex=3
-TabGroup=0
-[Window4]
-Filename=C:\Program Files (x86)\DataFlex 18.2\Pkg\Windows.pkg
-ViewType=1
-Top=24
-Left=4
-Bottom=543
-Right=1080
-CursorLine=4851
-CursorColumn=0
-TabIndex=4
 TabGroup=0
