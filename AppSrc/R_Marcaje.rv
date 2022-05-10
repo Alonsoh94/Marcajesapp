@@ -7,10 +7,14 @@ Use lista_empleado_sl.sl
 Use ListaNacionalidadesPromp.sl
 Use EmpleadoLookUp.sl
 
+//**** consulta de marcajes por rango de fechas y nacionalidad
+// {MarcajeTable.FechaMarcaje} in "2022-05-03" to "2022-05-04" and {Nacionalidad.CodigoNacionalidad} = 1
+
+
 
 Activate_View Activate_R_Marcaje for R_Marcaje
 Object R_Marcaje is a ReportView
-    Set Location to 3 4
+    Set Location to 1 5
     Set Size to 194 364
     Set Label to "AAAA          MM          DD"
 
@@ -63,8 +67,15 @@ Object R_Marcaje is a ReportView
         End
         
          If (Checked_State(OpFechas) = True) Begin            
-                       
+                      
                 Send  GenerarRerporteRangoFechas
+                      
+         End
+         
+           If (Checked_State(OpFechasEmp) = True) Begin            
+                      
+                Send  RerporteEmpleadoFechas
+               
                       
         End
         
@@ -74,7 +85,7 @@ Object R_Marcaje is a ReportView
     End_Procedure
     Object BtnGenerarReporte is a Button
         Set Size to 14 100
-        Set Location to 145 15
+        Set Location to 167 18
         Set Label to "Generar Reporte"
     
         // fires when the button is clicked
@@ -203,7 +214,7 @@ Object R_Marcaje is a ReportView
 
     Object oRadioGroup1 is a RadioGroup
         Set Location to 46 16
-        Set Size to 93 101
+        Set Size to 114 101
         Set Label to "GENERAR REPORTE POR"
         Set Color to clWhite
     
@@ -215,12 +226,21 @@ Object R_Marcaje is a ReportView
 
             Procedure OnChange
                 Forward Send OnChange
-                If (Checked_State(Current_Object) = True) Begin
+                If (Checked_State(OpRegistroUnico) = True) Begin
                    Set Prompt_Object of TxtReporteX to (oLista_empleado_sl(Current_Object)) 
                    Set Value of TxtReporteX to ""
                    //Set Prompt_Object to (oLista_empleado_sl(Current_Object))
                   //Set Type_Value of TxtFechaA to Date_Window
                 End
+                
+                If (Checked_State(OpRegistroUnico) = True) Begin
+              //Set Value of TxtFechaA to "activo"
+                   Set Visible_State of GrupoFechas to False
+                   Set Visible_State of TxtFechaDe to  False
+                   Set Visible_State of TxtFechaA to False
+                   Set Visible_State of TxtReporteX to True
+                  End
+                  
                 
             End_Procedure
 
@@ -235,10 +255,19 @@ Object R_Marcaje is a ReportView
 
             Procedure OnChange
                 Forward Send OnChange
-                If (Checked_State(Current_Object) = True) Begin
+                If (Checked_State(OpCodigoEmpleado) = True) Begin
                    Set Prompt_Object of TxtReporteX to (EmpleadoLookUp(Current_Object))
                    Set Value of TxtReporteX to ""
+                  
                 End
+                
+                If (Checked_State(OpCodigoEmpleado) = True) Begin
+              //Set Value of TxtFechaA to "activo"
+                   Set Visible_State of GrupoFechas to False
+                   Set Visible_State of TxtFechaDe to  False
+                   Set Visible_State of TxtFechaA to False
+                   Set Visible_State of TxtReporteX to True
+                  End
                 
             End_Procedure
         End_Object
@@ -252,10 +281,17 @@ Object R_Marcaje is a ReportView
             Procedure OnChange
                 Forward Send OnChange
                 //Send CodicionesOpciones
-                If (Checked_State(Current_Object) = True) Begin
+                If (Checked_State(OpNacionalidad) = True) Begin
                    Set Prompt_Object of TxtReporteX to (ListaNacionalidadesPromp(Current_Object))
                    Set Value of TxtReporteX to ""
                 End
+                 If (Checked_State(OpNacionalidad) = True) Begin
+              //Set Value of TxtFechaA to "activo"
+                   Set Visible_State of GrupoFechas to False
+                   Set Visible_State of TxtFechaDe to  False
+                   Set Visible_State of TxtFechaA to False
+                   Set Visible_State of TxtReporteX to True
+                  End
                  
                 // Set Prompt_Object to (oLista_empleado_sl(Current_Object))
                  
@@ -280,18 +316,14 @@ Object R_Marcaje is a ReportView
 
             Procedure OnChange
                 Forward Send OnChange
-               If (Checked_State(Current_Object) = True) Begin
+               If (Checked_State(OpFechas) = True) Begin
               //Set Value of TxtFechaA to "activo"
                Set Visible_State of GrupoFechas to True
                Set Visible_State of TxtFechaDe to  True
                Set Visible_State of TxtFechaA to True
+               Set Visible_State of TxtReporteX to False
               End
-              Else Begin
-                Set Visible_State of GrupoFechas to False
-                Set Visible_State of TxtFechaDe to False
-                Set Visible_State of TxtFechaA to False
-              
-              End
+             
               
                Set Value of TxtFechaDe to ""
                Set Value of TxtFechaA to ""
@@ -300,6 +332,54 @@ Object R_Marcaje is a ReportView
             End_Procedure
 
 
+        End_Object
+
+        Object OpFechasEmp is a Radio
+            Set Size to 10 50
+            Set Location to 81 13
+            Set Label to "Fechas y Empleado"
+
+            Procedure OnChange
+                Forward Send OnChange
+                
+               If (Checked_State(OpFechasEmp) = True) Begin              
+                   Set Prompt_Object of TxtReporteX to (EmpleadoLookUp(Current_Object))
+                   Set Value of TxtReporteX to ""
+                   Set Visible_State of GrupoFechas to True
+                   Set Visible_State of TxtFechaDe to  True
+                   Set Visible_State of TxtFechaA to True
+                   Set Visible_State of TxtReporteX to True
+              End
+              
+              
+                   Set Value of TxtFechaDe to ""
+                   Set Value of TxtFechaA to ""
+                   Set Value of TxtReporteX to ""
+            End_Procedure
+        End_Object
+
+        Object OpFechasNac is a Radio
+            Set Size to 10 50
+            Set Location to 95 13
+            Set Label to "Fechas y Nacionalidad"
+
+            Procedure OnChange
+                Forward Send OnChange
+                
+                 If (Checked_State(OpFechasNac) = True) Begin
+                    Set Prompt_Object of TxtReporteX to (ListaNacionalidadesPromp(Current_Object))
+                   Set Value of TxtReporteX to ""
+                   Set Visible_State of GrupoFechas to True
+                   Set Visible_State of TxtFechaDe to  True
+                   Set Visible_State of TxtFechaA to True
+                   Set Visible_State of TxtReporteX to True
+              End
+              
+              
+                   Set Value of TxtFechaDe to ""
+                   Set Value of TxtFechaA to ""
+                   Set Value of TxtReporteX to ""
+            End_Procedure
         End_Object
     
         // If you set Current_Radio, you must set it AFTER the
@@ -425,7 +505,7 @@ Object R_Marcaje is a ReportView
                 Append var_Seleccion '{EmpleadoTable.Codigo} = ' ('"'+var_MarcajesTable+'"')  // adjuntamos la seleccion con el valor asignado
                 //Append var_Seleccion '{MarcajeTable.Codigo} = ' (var_MarcajesTable)
             End
-            
+            //{MarcajeTable.FechaMarcaje} in "2022-05-02" to "2022-05-04" 
             Append var_Parametros '"'
             Append var_Parametros 'LISTA DE MARCAJES DE TRABAJADORES POR EMPLEADO"'
             
@@ -490,10 +570,7 @@ Object R_Marcaje is a ReportView
     
     Object ReporteFiltroFechas is a WinQLReport
         
-       // Set Report_name to "S3002D.rpt"
         Set Output_Destination to WQL_PRINT_TO_WINDOW
-        
-       
         
         Procedure OnInitializeReport
             
@@ -521,9 +598,6 @@ Object R_Marcaje is a ReportView
             Append SubFEchaFinal '-'
             Append SubFEchaFinal (Mid(FechaFinalX,2,1))
             
-           
-          
-            
             Forward Send OninitializeReport
             
             Clear MarcajeTable
@@ -549,7 +623,144 @@ Object R_Marcaje is a ReportView
         End_Procedure
     End_Object
         
+        // ********************* REPORTE POR FECHA Y POR EMPLEADO
+      Procedure RerporteEmpleadoFechas
+        
+        // ** Empleado
+        Integer sDatoGenerador
+        
+        Move 0 to sDatoGenerador  // asignamos valor vacio a nuestra variable
+        Get Value of (TxtReporteX(Current_Object)) item 0 to sDatoGenerador// TxtReporte es la caja de texto en nuestro form. traemos us valor y lo asignamos a nuestro sDatoGenerador
+        //Creamos una condicion para verificar que sDatoGenerador no este vacio
+        If (Trim(sDatoGenerador)) ne 0 Begin
+            Clear EmpleadoTable  //tabla
+            Move (Trim(sDatoGenerador)) to EmpleadoTable.Codigo  //atributo codiog de la tabla Marcajestable
+            Find eq EmpleadoTable by Index.1   // busca segun el indice
+            If [not Found] Begin
+                Error 200 'Ingrese un codigo de empleado Valido' // si no se encuentra que retorne el mensaje
+                Procedure_Return // retorna el procedimienot para hacer uso del sisema
+            End
+        End
+        
+        // ** Fecha
+        Indicate AceptarFecha True
+        
+        Move ("01/01/1900") to @FechaConteo
+        //Move ("1900/01/01") to @FechaConteo
+        
+        Get Value of TxtFechaDe to @FechaInicial
+        Get Value of TxtFechaA to @FechaFinal
+        
+         If (@FechaInicial <> '' or @FechaFinal <> '') Begin
+            If ( (@FechaInicial < @FechaConteo) or (@FechaFinal < @FechaConteo)) Begin 
+            Error 200 'Ingrese Fechas V lidas'
+            Indicate AceptarFecha False
+        End
+        Else If (@FechaInicial > @FechaFinal ) Begin
+             Error 200 'FECHA INICIAL NO PUEDE SER MAYOR A FECHA FINAL'
+            Indicate AceptarFecha False            
+        End
+        Else If (@FechaFinal >= @FechaInicial ) Begin
+            [ AceptarFecha ] Send Run_Report to (ReporteFiltroFechas(Current_Object))
+        End
+         //*****--++++++++++
+         End
+         Else Begin
+            Send Info_Box 'Las Fechas son Requeridas'
+         End
+         
+         
+          If (@FechaInicial <> '' or @FechaFinal <> '') Begin
+            Set Report_Name of (FiltroFechasEmpleado(Current_Object)) to "ReporteMarcajes.rpt"
+            Send Run_Report to (FiltroFechasEmpleado(Current_Object))
+        End
+        
+      End_Procedure
       
+      
+      // --------------- Crecion del Objeto
+   Object FiltroFechasEmpleado is a WinQLReport
+        
+        Set Output_Destination to WQL_PRINT_TO_WINDOW   // enviar la impresion de pantalla
+        
+        Procedure OnInitializeReport
+              String var_Parametros
+              Integer var_MarcajesTable        // declaracion de variable
+              String var_Seleccion
+                Date FechaInicialX
+                Date FechaFinalX
+                Date FechaConteoX
+                String FullQuery
+                String SeleccionX
+                String SubFechaInicial
+                String SubFechaFinal
+                
+                Forward Send OnInitializeReport  // lanzamos el iniciador del reporte                
+                Move 0 to var_MarcajesTable  // asignamos un valor vacio
+                
+              //  Get Value of (TxtReporteX(Current_Object)) item 0 to var_MarcajesTable  // obtenes el valor de la caja de texto y lo asignamos a la variable
+                Get Value of TxtReporteX to var_MarcajesTable
+                Move '' to var_Parametros // asignamos vacio a parametros
+                
+                // Validamos que el lo que se le asigno a var_Marcajes no haya sido un dato vacio
+                If (var_MarcajesTable ne 0) Begin
+                    //Move 0 to var_Seleccion // asignamos vacio
+                    Append var_Seleccion '{EmpleadoTable.Codigo} = '
+                    Append var_Seleccion  var_MarcajesTable                    
+                End
+                
+               
+                // ***** incian Fechas
+                Get Value of TxtFechaDe to FechaInicialX
+                Get Value of TxtFechaA to FechaFinalX
+               
+                Append SubFechaInicial (Mid(FechaInicialX,4,7))
+                Append SubFechaInicial '-'
+                Append SubFechaInicial (Mid(FechaInicialX,2,4))
+                Append SubFechaInicial '-'
+                Append SubFechaInicial (Mid(FechaInicialX,2,1))
+                
+                Append SubFEchaFinal (Mid(FechaFinalX,4,7))
+                Append SubFEchaFinal '-'
+                Append SubFEchaFinal (Mid(FechaFinalX,2,4))
+                Append SubFEchaFinal '-'
+                Append SubFEchaFinal (Mid(FechaFinalX,2,1)) 
+            
+                Clear MarcajeTable
+                If (AceptarFecha = True) Begin
+                    
+                   // Append @Seleccion '{MarcajeTable.FechaMarcaje} >= Date'  ('"'+@FechaInicial+'"') // ' And {MarcajeTable.FechaMarcaje} <= Date' ('"'+@FechaFinal+'"')
+                    Append SeleccionX '{MarcajeTable.FechaMarcaje} in "'
+                    Append SeleccionX SubFechaInicial
+                    Append SeleccionX '" to "'
+                    Append SeleccionX SubFechaFinal
+                    Append SeleccionX '"'                    
+                End
+            
+                Append var_Parametros '"'
+                Append var_Parametros 'LISTA DE MARCAJES POR FECHA Y EMPLEADO"'
+                
+                // se crea la cadena completa
+                Append FullQuery var_Seleccion  
+                Append FullQuery ' and '              
+                Append FullQuery SeleccionX
+         
+                Set SelectionFormula to FullQuery
+                Set Formula "Titulo" to var_Parametros
+                
+        End_Procedure
+          
+   End_Object
+   
+   
+   // ******** GENERAR REPORTE DE UN PAIS DELIMITADO POR RANGO DE FECHAS
+   
+   
+   
+   
+   
+   
+   
        
   
 End_Object
