@@ -12,11 +12,11 @@ Use EmpleadoLookUp.sl
 
 
 
-Activate_View Activate_R_Marcaje for R_Marcaje
-Object R_Marcaje is a ReportView
-    Set Location to 1 5
+Activate_View Activate_MarcajesEmpleado for MarcajesEmpleado
+Object MarcajesEmpleado is a ReportView
+    Set Location to 22 18
     Set Size to 194 364
-    Set Label to "AAAA          MM          DD"
+    Set Label to "REPORTE DE MARCAJES DE EMPLEADOS"
 
     Object TxtReporteX is a Form
         Set Size to 15 118
@@ -77,7 +77,16 @@ Object R_Marcaje is a ReportView
                 Send  RerporteEmpleadoFechas
                
                       
-        End
+           End
+           
+            If (Checked_State(OpFechasNac) = True) Begin            
+                      
+                Send  MarcajesFechaPais
+               
+                      
+           End
+           
+           
         
         
         
@@ -297,10 +306,7 @@ Object R_Marcaje is a ReportView
                  
             End_Procedure
 
-            Procedure Mouse_Click Integer iWindowNumber Integer iPosition
-                Forward Send Mouse_Click iWindowNumber iPosition
-               // Set Prompt_Object to (Nacionalidad_sl(Current_Object))
-            End_Procedure
+            
         End_Object
     
         Procedure Notify_Select_State Integer iToItem Integer iFromItem
@@ -338,6 +344,7 @@ Object R_Marcaje is a ReportView
             Set Size to 10 50
             Set Location to 81 13
             Set Label to "Fechas y Empleado"
+            Set Color to clWhite
 
             Procedure OnChange
                 Forward Send OnChange
@@ -362,13 +369,13 @@ Object R_Marcaje is a ReportView
             Set Size to 10 50
             Set Location to 95 13
             Set Label to "Fechas y Nacionalidad"
+            Set Color to clWhite
 
             Procedure OnChange
                 Forward Send OnChange
                 
-                 If (Checked_State(OpFechasNac) = True) Begin
-                    Set Prompt_Object of TxtReporteX to (ListaNacionalidadesPromp(Current_Object))
-                   Set Value of TxtReporteX to ""
+                 If (Checked_State(OpFechasNac) = True) Begin                   
+                   Set Prompt_Object of TxtReporteX to (ListaNacionalidadesPromp(Current_Object))
                    Set Visible_State of GrupoFechas to True
                    Set Visible_State of TxtFechaDe to  True
                    Set Visible_State of TxtFechaA to True
@@ -404,12 +411,14 @@ Object R_Marcaje is a ReportView
         If (Trim(sDatoGenerador)) ne 0 Begin
             Clear Nacionalidad  //tabla
             Move (Trim(sDatoGenerador)) to Nacionalidad.CodigoNacionalidad  //atributo codiog de la tabla Marcajestable
-            Find eq MarcajeTable by Index.1   // busca segun el indice
+            Find eq Nacionalidad by Index.1   // busca segun el indice
             If [not Found] Begin
                 Error 200 'Ingrese una Nacionalidad Valida' // si no se encuentra que retorne el mensaje
                 Procedure_Return // retorna el procedimienot para hacer uso del sisema
             End
         End
+        
+    
    
    
         Set Report_Name of (ReporteMarcajesObjectNacionalidad(Current_Object)) to "ReporteMarcajes.rpt"
@@ -756,8 +765,134 @@ Object R_Marcaje is a ReportView
    // ******** GENERAR REPORTE DE UN PAIS DELIMITADO POR RANGO DE FECHAS
    
    
+   Procedure MarcajesFechaPais
+    
+         Integer sDatoGenerador
+        
+        Move 0 to sDatoGenerador  // asignamos valor vacio a nuestra variable
+        Get Value of (TxtReporteX(Current_Object)) item 0 to sDatoGenerador// TxtReporte es la caja de texto en nuestro form. traemos us valor y lo asignamos a nuestro sDatoGenerador
+        //Creamos una condicion para verificar que sDatoGenerador no este vacio
+        If (Trim(sDatoGenerador)) ne 0 Begin
+            Clear Nacionalidad  //tabla
+            Move (Trim(sDatoGenerador)) to Nacionalidad.CodigoNacionalidad  //atributo codiog de la tabla Marcajestable
+            Find eq Nacionalidad by Index.1   // busca segun el indice
+            If [not Found] Begin
+                Error 200 'Ingrese una Nacionalidad Valida' // si no se encuentra que retorne el mensaje
+                Procedure_Return // retorna el procedimienot para hacer uso del sisema
+            End
+        End
+    
+    
+    // ** Fecha
+        Indicate AceptarFecha True
+        
+        Move ("01/01/1900") to @FechaConteo
+        //Move ("1900/01/01") to @FechaConteo
+        
+        Get Value of TxtFechaDe to @FechaInicial
+        Get Value of TxtFechaA to @FechaFinal
+        
+         If (@FechaInicial <> '' or @FechaFinal <> '') Begin
+            If ( (@FechaInicial < @FechaConteo) or (@FechaFinal < @FechaConteo)) Begin 
+            Error 200 'Ingrese Fechas V lidas'
+            Indicate AceptarFecha False
+        End
+        Else If (@FechaInicial > @FechaFinal ) Begin
+             Error 200 'FECHA INICIAL NO PUEDE SER MAYOR A FECHA FINAL'
+            Indicate AceptarFecha False            
+        End
+        Else If (@FechaFinal >= @FechaInicial ) Begin
+            [ AceptarFecha ] Send Run_Report to (ReporteFiltroFechas(Current_Object))
+        End
+         //*****--++++++++++
+         End
+         Else Begin
+            Send Info_Box 'Las Fechas son Requeridas'
+         End
+         
+         
+          If (@FechaInicial <> '' or @FechaFinal <> '') Begin
+            Set Report_Name of (FiltroFechasPais(Current_Object)) to "ReporteMarcajes.rpt"
+            Send Run_Report to (FiltroFechasPais(Current_Object))
+        End
+   End_Procedure
    
-   
+   // creacion del objeo FechasNacionalidad
+   Object FiltroFechasPais is a WinQLReport
+        
+        Set Output_Destination to WQL_PRINT_TO_WINDOW   // enviar la impresion de pantalla
+        
+        Procedure OnInitializeReport
+              String var_Parametros
+              Integer var_MarcajesTable        // declaracion de variable
+              String var_Seleccion
+                Date FechaInicialX
+                Date FechaFinalX
+                Date FechaConteoX
+                String FullQuery
+                String SeleccionX
+                String SubFechaInicial
+                String SubFechaFinal
+                
+                Forward Send OnInitializeReport  // lanzamos el iniciador del reporte                
+               
+               
+            Move 0 to var_MarcajesTable  // asignamos un valor vacio
+            
+          //  Get Value of (TxtReporteX(Current_Object)) item 0 to var_MarcajesTable  // obtenes el valor de la caja de texto y lo asignamos a la variable
+            Get Value of TxtReporteX to var_MarcajesTable
+            Move '' to var_Parametros // asignamos vacio a parametros
+            
+            // Validamos que el lo que se le asigno a var_Marcajes no haya sido un dato vacio
+            If (var_MarcajesTable ne 0) Begin
+                //Move 0 to var_Seleccion // asignamos vacio
+                Append var_Seleccion '{Nacionalidad.CodigoNacionalidad} = '
+                Append var_Seleccion var_MarcajesTable
+                
+            End
+               
+               
+                // ***** incian Fechas
+                Get Value of TxtFechaDe to FechaInicialX
+                Get Value of TxtFechaA to FechaFinalX
+               
+                Append SubFechaInicial (Mid(FechaInicialX,4,7))
+                Append SubFechaInicial '-'
+                Append SubFechaInicial (Mid(FechaInicialX,2,4))
+                Append SubFechaInicial '-'
+                Append SubFechaInicial (Mid(FechaInicialX,2,1))
+                
+                Append SubFEchaFinal (Mid(FechaFinalX,4,7))
+                Append SubFEchaFinal '-'
+                Append SubFEchaFinal (Mid(FechaFinalX,2,4))
+                Append SubFEchaFinal '-'
+                Append SubFEchaFinal (Mid(FechaFinalX,2,1)) 
+            
+                Clear MarcajeTable
+                If (AceptarFecha = True) Begin
+                    
+                   // Append @Seleccion '{MarcajeTable.FechaMarcaje} >= Date'  ('"'+@FechaInicial+'"') // ' And {MarcajeTable.FechaMarcaje} <= Date' ('"'+@FechaFinal+'"')
+                    Append SeleccionX '{MarcajeTable.FechaMarcaje} in "'
+                    Append SeleccionX SubFechaInicial
+                    Append SeleccionX '" to "'
+                    Append SeleccionX SubFechaFinal
+                    Append SeleccionX '"'                    
+                End
+            
+                Append var_Parametros '"'
+                Append var_Parametros 'LISTA DE MARCAJES POR FECHA Y EMPLEADO"'
+                
+                // se crea la cadena completa
+                Append FullQuery var_Seleccion  
+                Append FullQuery ' and '              
+                Append FullQuery SeleccionX
+         
+                Set SelectionFormula to FullQuery
+                Set Formula "Titulo" to var_Parametros
+                
+        End_Procedure
+          
+   End_Object
    
    
    
