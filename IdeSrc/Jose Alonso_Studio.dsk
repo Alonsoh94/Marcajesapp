@@ -1,63 +1,115 @@
 [Workspace]
-CurrentProject=JUEVESAPPMARCAJES.src [file not found]
+CurrentProject=APPMARCAJESCR.src
 Location=C:\DataFlex Projects\MARCAJESAPP\IdeSrc\Jose Alonso_Studio.dsk
-CreateNew=1
+CreateNew=2
 [TabWindows]
 GroupCount=1
 HorizontalGroups=1
 [TabGroup0]
 GroupSize=40
-SelectedTab=4
+SelectedTab=2
 [Window0]
+Filename=C:\DataFlex Projects\MARCAJESAPP\DDSrc\cEmpleadoTableDataDictionary.dd
+ViewType=3
+Top=24
+Left=4
+Bottom=542
+Right=975
+TabIndex=4
+TabGroup=0
+[Window1]
 Filename=Workspace Dashboard
 ViewType=101
 Top=24
 Left=4
-Bottom=543
-Right=1080
+Bottom=542
+Right=975
 TabIndex=0
 TabGroup=0
-[Window1]
-Filename=C:\DataFlex Projects\MARCAJESAPP\AppSrc\MARCAJES.rv
+[Window2]
+Filename=C:\Users\Jose Alonso\Downloads\S3002.RV
 ViewType=1
 Top=24
 Left=4
-Bottom=543
-Right=1080
-CursorLine=164
-CursorColumn=13
+Bottom=542
+Right=975
+CursorLine=2
+CursorColumn=0
+Bookmarks=2;3;88;90;92;93;94;102;103;104;106;107;108;109;116;118;125;132;133;134;135;136;137;138;139;140;152;153;160;166;167;168;169;170;171;172;173;174;186;190;191;192;193;194;195;196;200;203;204;215;219;220;221;222;223;224;225;229;232;233;248;249;250;251;252;290;291;373;374;375;
 TabIndex=1
 TabGroup=0
-[Window2]
-Filename=C:\DataFlex Projects\MARCAJESAPP\AppSrc\R_Marcaje.rv
-ViewType=1
-Top=24
-Left=4
-Bottom=543
-Right=1080
-CursorLine=100
-CursorColumn=0
-TabIndex=2
-TabGroup=0
 [Window3]
-Filename=C:\DataFlex Projects\MARCAJESAPP\AppSrc\Prueba.rv
+Filename=C:\Program Files (x86)\DataFlex 18.2\Pkg\Dll.pkg
 ViewType=1
 Top=24
 Left=4
-Bottom=543
-Right=1080
-CursorLine=71
-CursorColumn=2
-TabIndex=3
+Bottom=542
+Right=975
+CursorLine=153
+CursorColumn=0
+TabIndex=6
 TabGroup=0
 [Window4]
+Filename=C:\Program Files (x86)\DataFlex 18.2\Pkg\cApplication.pkg
+ViewType=1
+Top=24
+Left=4
+Bottom=542
+Right=975
+CursorLine=356
+CursorColumn=0
+TabIndex=7
+TabGroup=0
+[Window5]
+Filename=C:\DataFlex Projects\MARCAJESAPP\AppSrc\R_Marcaje.rv
+ViewType=2
+Top=24
+Left=4
+Bottom=542
+Right=975
+TabIndex=3
+TabGroup=0
+[Window6]
 Filename=C:\Program Files (x86)\DataFlex 18.2\Pkg\Windows.pkg
 ViewType=1
 Top=24
 Left=4
-Bottom=543
-Right=1080
-CursorLine=4851
+Bottom=542
+Right=975
+CursorLine=3842
 CursorColumn=0
-TabIndex=4
+TabIndex=8
+TabGroup=0
+[Window7]
+Filename=C:\Program Files (x86)\DataFlex 18.2\Pkg\Msgbox.pkg
+ViewType=1
+Top=24
+Left=4
+Bottom=542
+Right=975
+CursorLine=116
+CursorColumn=0
+TabIndex=9
+TabGroup=0
+[Window8]
+Filename=C:\Program Files (x86)\DataFlex 18.2\Pkg\CrystalReport.pkg
+ViewType=1
+Top=24
+Left=4
+Bottom=542
+Right=975
+CursorLine=4971
+CursorColumn=0
+TabIndex=5
+TabGroup=0
+[Window9]
+Filename=C:\DataFlex Projects\MARCAJESAPP\AppSrc\R_Marcaje.rv
+ViewType=1
+Top=24
+Left=4
+Bottom=542
+Right=975
+CursorLine=0
+CursorColumn=0
+TabIndex=2
 TabGroup=0

@@ -4154,309 +4154,819 @@ Including file: lista_empleado_sl.sl    (C:\DataFlex Projects\MARCAJESAPP\AppSrc
 78201>>>>>
 78201>>>>>//*********************************************** end of TableLookup.tpl for Spanish ****************
 78201>>>>>
-78201>>>
-78201>>>Activate_View Activate_R_Marcaje for R_Marcaje
-78211>>>>
-78211>>>Object R_Marcaje is a ReportView
-78213>>>    Set Location to 6 6
-78214>>>    Set Size to 172 246
-78215>>>    Set Label to "Reporte Marcaje"
-78216>>>//
-78216>>>//   Object oSaveAsDialog is a SaveAsDialog
-78216>>>//   End_Object
-78216>>>//
-78216>>>//    Procedure StartReport
-78216>>>//        Integer iOutputDevice 
-78216>>>//        Handle hoWorkspace
-78216>>>//        String sFileName sCurrentDirectory sDataPath
-78216>>>//    
-78216>>>//        Get Output_Device_Mode to iOutputDevice
-78216>>>//    
-78216>>>//        Case Begin
-78216>>>//            Case (iOutputDevice = PRINT_TO_WINDOW)
-78216>>>//                Get_Current_Directory to sCurrentDirectory
-78216>>>//                Get phoWorkspace of ghoApplication to hoWorkspace
-78216>>>//                Get psDataPath of hoWorkspace to sDataPath
-78216>>>//                Get PathAtIndex of hoWorkspace sDataPath 1 to sDataPath
-78216>>>//                Set_Directory sDataPath
-78216>>>//                Make_Temp_File "TXT" sFileName
-78216>>>//                Set_Directory sCurrentDirectory
-78216>>>//                If (Right(sDataPath, 1) <> Sysconf(SYSCONF_DIR_SEPARATOR)) Begin
-78216>>>//                    Move (sDataPath - Sysconf(SYSCONF_DIR_SEPARATOR)) to sDataPath
-78216>>>//                End
-78216>>>//                Move (sDataPath - sFileName) to sFileName
-78216>>>//                Set Output_Device_Name to sFileName
-78216>>>//                Case Break
-78216>>>//            
-78216>>>//        Case End
-78216>>>//    
-78216>>>//        Send Run_Report
-78216>>>//    
-78216>>>//        If (iOutputDevice = PRINT_TO_WINDOW) Begin
-78216>>>//            Runprogram Background "NotePad" sFileName
-78216>>>//            EraseFile sFileName
-78216>>>//        End
-78216>>>//    End_Procedure
-78216>>>//    
-78216>>>//    Object oBasicReport is a BasicReport
-78216>>>//        // Set Server To DDOName
-78216>>>//        
-78216>>>//        // Create a new file with the images for the report. Include this filename in the
-78216>>>//        // component with a USE statement. Replace the HeaderSection, BodySection, FooterSection
-78216>>>//        // with the imagenames you've created.
-78216>>>//        // NOTE: 
-78216>>>//        // - Image names must be unique throughout the program
-78216>>>//        // - Images start at the first column of the sourcecode in the format /ImageName
-78216>>>//        // - End of an image is the start of a new one or a /*
-78216>>>//
-78216>>>//        Function Starting_Main_Report Returns Integer
-78216>>>//            Integer iRetval
-78216>>>//            
-78216>>>//            Forward Get Starting_Main_Report to iRetval
-78216>>>//            
-78216>>>//            Function_Return iRetval
-78216>>>//        End_Function
-78216>>>//
-78216>>>//     
-78216>>>//
-78216>>>//    End_Object
-78216>>>//
-78216>>>    Object TxtReporteX is a Form
-78218>>>        Set Size to 13 100
-78219>>>        Set Location to 20 79
-78220>>>        Set Label to "Seleccionar"
-78221>>>        Set Prompt_Button_Mode to PB_PromptOn
-78222>>>    
-78222>>>        // OnChange is called on every changed character
-78222>>>    //    Procedure OnChange
-78222>>>    //        String sValue
-78222>>>    //    
-78222>>>    //        Get Value to sValue
-78222>>>    //    End_Procedure
-78222>>>    Set Prompt_Object to (oLista_empleado_sl(Current_Object))
-78223>>>   // Set Prompt_Object to (LISTAMARCAJESLS(Current_Object))
-78223>>>    
-78223>>>        Procedure Prompt_Callback Integer hSL
-78226>>>            Set initial_column of hSL to 0
-78227>>>            Set export_column of hSL to 0
-78228>>>            
-78228>>>
-78228>>>        End_Procedure
-78229>>>    
-78229>>>    End_Object
-78230>>>    Object BtnGenerarReporte is a Button
-78232>>>        Set Size to 14 100
-78233>>>        Set Location to 145 15
-78234>>>        Set Label to "Generar Reporte"
-78235>>>    
-78235>>>        // fires when the button is clicked
-78235>>>        Procedure OnClick
-78238>>>            Send GenerarRerporte
-78239>>>        End_Procedure
-78240>>>    
-78240>>>    End_Object
-78241>>>    
-78241>>>     // Procedimiento para dar inicio a la generacion del reporte
-78241>>>    Procedure GenerarRerporte
-78244>>>        Integer sDatoGenerador
-78244>>>        
-78244>>>        Move 0 to sDatoGenerador  // asignamos valor vacio a nuestra variable
-78245>>>        Get Value of (TxtReporteX(Current_Object)) item 0 to sDatoGenerador// TxtReporte es la caja de texto en nuestro form. traemos us valor y lo asignamos a nuestro sDatoGenerador
-78246>>>        //Creamos una condicion para verificar que sDatoGenerador no este vacio
-78246>>>        If (Trim(sDatoGenerador)) ne 0 Begin
-78248>>>            Clear MarcajeTable  //tabla
-78249>>>            Move (Trim(sDatoGenerador)) to MarcajeTable.Codigo  //atributo codiog de la tabla Marcajestable
-78250>>>            Find eq MarcajeTable by Index.1   // busca segun el indice
-78251>>>>
-78251>>>            If [not Found] Begin
-78253>>>                Error 200 'Ingrese un Marcaje Valido' // si no se encuentra que retorne el mensaje
-78254>>>>
-78254>>>                Procedure_Return // retorna el procedimienot para hacer uso del sisema
-78255>>>            End
-78255>>>>
-78255>>>        End
-78255>>>>
-78255>>>   
-78255>>>   
-78255>>>        Set Report_Name of (ReporteMarcajesObject(Current_Object)) to "ReporteMarcajes.rpt"
-78256>>>        Send Run_Report to (ReporteMarcajesObject(Current_Object))
-78257>>>    End_Procedure
-78258>>>    
-78258>>>   Object ReporteMarcajesObject is a WinQLReport  //Creamos el objeto WinQLReport
-78260>>>        Set Output_Destination to WQL_PRINT_TO_WINDOW   // enviar la impresion de pantalla
-78261>>>        
-78261>>>        Procedure OnInitializeReport
-78264>>>             Local String var_Parametros
-78264>>>             Local Integer var_MarcajesTable        // declaracion de variable
-78264>>>             Local String var_Seleccion
-78264>>>            
-78264>>>            Forward Send OnInitializeReport  // lanzamos el iniciador del reporte
-78266>>>            
-78266>>>            Move 0 to var_MarcajesTable  // asignamos un valor vacio
-78267>>>            
-78267>>>          //  Get Value of (TxtReporteX(Current_Object)) item 0 to var_MarcajesTable  // obtenes el valor de la caja de texto y lo asignamos a la variable
-78267>>>            Get Value of TxtReporteX to var_MarcajesTable
-78268>>>            Move '' to var_Parametros // asignamos vacio a parametros
-78269>>>            
-78269>>>            // Validamos que el lo que se le asigno a var_Marcajes no haya sido un dato vacio
-78269>>>            If (var_MarcajesTable ne 0) Begin
-78271>>>                //Move 0 to var_Seleccion // asignamos vacio
-78271>>>                Append var_Seleccion '{MarcajeTable.Codigo} = ' ('"'+var_MarcajesTable+'"')  // adjuntamos la seleccion con el valor asignado
-78273>>>                //Append var_Seleccion '{MarcajeTable.Codigo} = ' (var_MarcajesTable)
-78273>>>            End
-78273>>>>
-78273>>>            
-78273>>>            Append var_Parametros '"'
-78274>>>            Append var_Parametros 'LISTA DE MARCAJES DE TRABAJADORES"'
-78275>>>            
-78275>>>     
-78275>>>            Set SelectionFormula to var_Seleccion
-78276>>>            Set Formula "Titulo" to var_Parametros
-78277>>>                
-78277>>>            
-78277>>>        End_Procedure
-78278>>>       
-78278>>>    
-78278>>>   End_Object
-78279>>>
-78279>>>    Object GrupoFechas is a Group
-78281>>>        Set Size to 30 122
-78282>>>        Set Location to 108 119
-78283>>>        Set Label to "Rango de Fechas"
-78284>>>        Set Color to clWhite
-78285>>>        Set Bitmap_Style to Bitmap_Tile
-78286>>>
-78286>>>        Object TxtFechaDe is a Form
-78288>>>            Set Size to 13 44
-78289>>>            Set Location to 13 12
-78290>>>            Set Label to "De"
-78291>>>            Set Label_Col_Offset to 10
-78292>>>        
-78292>>>            // OnChange is called on every changed character
-78292>>>        //    Procedure OnChange
-78292>>>        //        String sValue
-78292>>>        //    
-78292>>>        //        Get Value to sValue
-78292>>>        //    End_Procedure
-78292>>>        
-78292>>>        End_Object
-78293>>>
-78293>>>        Object TxtFechaA is a Form
-78295>>>            Set Size to 13 44
-78296>>>            Set Location to 13 71
-78297>>>            Set Label to "A"
-78298>>>            Set Label_Col_Offset to 10
-78299>>>        
-78299>>>            // OnChange is called on every changed character
-78299>>>        //    Procedure OnChange
-78299>>>        //        String sValue
-78299>>>        //    
-78299>>>        //        Get Value to sValue
-78299>>>        //    End_Procedure
-78299>>>        
-78299>>>        End_Object
-78300>>>    End_Object
-78301>>>
-78301>>>    Object oRadioGroup1 is a RadioGroup
-78303>>>        Set Location to 46 16
-78304>>>        Set Size to 93 101
-78305>>>        Set Label to "GENERAR REPORTE POR"
-78306>>>        Set Color to clWhite
-78307>>>    
-78307>>>        Object OpRegistroUnico is a Radio
-78309>>>            Set Label to "Codigo de Registro"
-78310>>>            Set Size to 10 61
-78311>>>            Set Location to 20 13
-78312>>>            Set Color to clWhite
-78313>>>        End_Object
-78314>>>    
-78314>>>        Object OpCodigoEmpleado is a Radio
-78316>>>            Set Label to "Codigo Empleado"
-78317>>>            Set Size to 10 61
-78318>>>            Set Location to 35 13
-78319>>>            Set Color to clWhite
-78320>>>        End_Object
-78321>>>    
-78321>>>        Object OpNacionalidad is a Radio
-78323>>>            Set Label to "Nacionalidad"
-78324>>>            Set Size to 10 61
-78325>>>            Set Location to 51 13
-78326>>>            Set Color to clWhite
-78327>>>        End_Object
-78328>>>    
-78328>>>        Procedure Notify_Select_State Integer iToItem Integer iFromItem
-78331>>>            Forward Send Notify_Select_State iToItem iFromItem
-78333>>>            // for augmentation
-78333>>>        End_Procedure
-78334>>>
-78334>>>        Object OpFechas is a Radio
-78336>>>            Set Label to "Fechas"
-78337>>>            Set Size to 10 61
-78338>>>            Set Location to 66 13
-78339>>>            Set Color to clWhite
-78340>>>
-78340>>>            Procedure OnChange
-78343>>>                Forward Send OnChange
-78345>>>                
-78345>>>     
-78345>>>            End_Procedure
-78346>>>
-78346>>>            Procedure Mouse_Click Integer iWindowNumber Integer iPosition
-78349>>>                Forward Send Mouse_Click iWindowNumber iPosition
-78351>>>                If (OpFechas eq True) Begin
-78353>>>                    Set Visible_State of TxtFechaDe to False
-78354>>>                    Set Visible_State of TxtFechaA to True
-78355>>>                    Set Visible_State of GrupoFechas to True
-78356>>>                    
-78356>>>                End                
-78356>>>>
-78356>>>                Else Begin
-78357>>>                    Set Visible_State of TxtFechaDe to True
-78358>>>                    Set Visible_State of TxtFechaA to False
-78359>>>                    Set Visible_State of GrupoFechas to False
-78360>>>                End
-78360>>>>
-78360>>>            End_Procedure
-78361>>>        End_Object
-78362>>>    
-78362>>>        // If you set Current_Radio, you must set it AFTER the
-78362>>>        // radio objects have been created AND AFTER Notify_Select_State has been
-78362>>>        // created. i.e. Set in bottom-code of object at the end!!
-78362>>>    //    Set Current_Radio to 0
-78362>>>    
-78362>>>    End_Object
-78363>>>    
-78363>>>    
-78363>>>    
-78363>>>    
-78363>>>    
-78363>>>    
-78363>>>    
-78363>>>   
-78363>>>
-78363>>>End_Object
-78364>
-78364>        Procedure Activate_About
-78367>            Send DoAbout "" "" "" "" ""
-78368>        End_Procedure
-78369>
-78369>    End_Object
-78370>
-78370>End_Object
-78371>
-78371>Start_UI
-78372>
-78372>//************************** end of WindowsProject.tpl for Spanish **************
-78372>
+78201>>>Use ListaNacionalidadesPromp.sl
+Including file: ListaNacionalidadesPromp.sl    (C:\DataFlex Projects\MARCAJESAPP\AppSrc\ListaNacionalidadesPromp.sl)
+78201>>>>>//**************************************************************
+78201>>>>>// TableLookup.tpl for Windows application for Spanish 
+78201>>>>>// translated by Moose Software (www.moose-software.com) 
+78201>>>>>// 13/07/2010 Revised for VDF 16.0 by Moose Software
+78201>>>>>// 05/02/2012 Revised for VDF 17.0 by Moose Software
+78201>>>>>// 13/06/2013 Revised for VDF 17.1 by Moose Software
+78201>>>>>// 02/05/2014 Revised for VDF 18.0 by Moose Software
+78201>>>>>//*************************************************************
+78201>>>>>
+78201>>>>>Use Windows.pkg
+78201>>>>>Use DFClient.pkg
+78201>>>>>use DFSellst.pkg
+78201>>>>>Use cNacionalidadDataDictionary.dd
+78201>>>>>
+78201>>>>>Object ListaNacionalidadesPromp is a dbModalPanel
+78203>>>>>    Object oNacionalidad_DD is a cNacionalidadDataDictionary
+78205>>>>>    End_Object
+78206>>>>>
+78206>>>>>    Set Main_DD to oNacionalidad_DD
+78207>>>>>    Set Server to oNacionalidad_DD
+78208>>>>>
+78208>>>>>    Set Size to 178 395
+78209>>>>>    Set Location     to 4 5
+78210>>>>>    Set Border_Style to Border_Thick
+78211>>>>>    Set Label to "ListaNacionalidadesPromp"
+78212>>>>>
+78212>>>>>    Object oSelList is a dbList
+78214>>>>>        Set peAnchors to anAll
+78215>>>>>        Set Size to 150 383
+78216>>>>>        Set Location  to 6 6
+78217>>>>>
+78217>>>>>        Begin_Row
+78220>>>>>            Entry_Item Nacionalidad.CodigoNacionalidad
+78221>>>>>            Entry_Item Nacionalidad.Pais
+78222>>>>>        End_Row
+78227>>>>>
+78227>>>>>        Set Main_File to Nacionalidad.File_Number
+78228>>>>>
+78228>>>>>        Set Form_Width 0 to 76
+78229>>>>>        Set Header_Label 0 to "Codigo"
+78230>>>>>        Set Form_Width 1 to 400
+78231>>>>>        Set Header_Label 1 to "Pais"
+78232>>>>>    End_Object
+78233>>>>>
+78233>>>>>    Object oOK_bn is a Button
+78235>>>>>        Set Label     to "&Aceptar"
+78236>>>>>        Set Location to 160 231
+78237>>>>>        Set peAnchors to anBottomRight
+78238>>>>>
+78238>>>>>        Procedure OnClick
+78241>>>>>            Send Ok of oSelList
+78242>>>>>        End_Procedure
+78243>>>>>
+78243>>>>>    End_Object
+78244>>>>>
+78244>>>>>    Object oCancel_bn is a Button
+78246>>>>>        Set Label     to "&Cancelar"
+78247>>>>>        Set Location to 160 285
+78248>>>>>        Set peAnchors to anBottomRight
+78249>>>>>
+78249>>>>>        Procedure OnClick
+78252>>>>>            Send Cancel of oSelList
+78253>>>>>        End_Procedure
+78254>>>>>
+78254>>>>>    End_Object
+78255>>>>>
+78255>>>>>    Object oSearch_bn is a Button
+78257>>>>>        Set Label     to "&Buscar..."
+78258>>>>>        Set Location to 160 339
+78259>>>>>        Set peAnchors to anBottomRight
+78260>>>>>
+78260>>>>>        Procedure OnClick
+78263>>>>>            Send Search of oSelList
+78264>>>>>        End_Procedure
+78265>>>>>
+78265>>>>>    End_Object
+78266>>>>>
+78266>>>>>    On_Key Key_Alt+Key_A Send KeyAction of oOk_bn
+78267>>>>>    On_Key Key_Alt+Key_C Send KeyAction of oCancel_bn
+78268>>>>>    On_Key Key_Alt+Key_B Send KeyAction of oSearch_bn
+78269>>>>>
+78269>>>>>End_Object
+78270>>>>>
+78270>>>>>//*********************************************** end of TableLookup.tpl for Spanish ****************
+78270>>>>>
+78270>>>Use EmpleadoLookUp.sl
+Including file: EmpleadoLookUp.sl    (C:\DataFlex Projects\MARCAJESAPP\AppSrc\EmpleadoLookUp.sl)
+78270>>>>>//**************************************************************
+78270>>>>>// TableLookup.tpl for Windows application for Spanish 
+78270>>>>>// translated by Moose Software (www.moose-software.com) 
+78270>>>>>// 13/07/2010 Revised for VDF 16.0 by Moose Software
+78270>>>>>// 05/02/2012 Revised for VDF 17.0 by Moose Software
+78270>>>>>// 13/06/2013 Revised for VDF 17.1 by Moose Software
+78270>>>>>// 02/05/2014 Revised for VDF 18.0 by Moose Software
+78270>>>>>//*************************************************************
+78270>>>>>
+78270>>>>>Use Windows.pkg
+78270>>>>>Use DFClient.pkg
+78270>>>>>use DFSellst.pkg
+78270>>>>>Use cNacionalidadDataDictionary.dd
+78270>>>>>Use cEmpleadoTableDataDictionary.dd
+78270>>>>>
+78270>>>>>Object EmpleadoLookUp is a dbModalPanel
+78272>>>>>    Object oNacionalidad_DD is a cNacionalidadDataDictionary
+78274>>>>>    End_Object
+78275>>>>>
+78275>>>>>    Object oEmpleadoTable_DD is a cEmpleadoTableDataDictionary
+78277>>>>>        Set DDO_Server to oNacionalidad_DD
+78278>>>>>    End_Object
+78279>>>>>
+78279>>>>>    Set Main_DD to oEmpleadoTable_DD
+78280>>>>>    Set Server to oEmpleadoTable_DD
+78281>>>>>
+78281>>>>>    Set Size to 177 513
+78282>>>>>    Set Location     to 4 5
+78283>>>>>    Set Border_Style to Border_Thick
+78284>>>>>    Set Label to "EmpleadoLookUp"
+78285>>>>>
+78285>>>>>    Object oSelList is a dbList
+78287>>>>>        Set peAnchors to anAll
+78288>>>>>        Set Size to 149 501
+78289>>>>>        Set Location  to 6 6
+78290>>>>>
+78290>>>>>        Begin_Row
+78293>>>>>            Entry_Item EmpleadoTable.Codigo
+78294>>>>>            Entry_Item EmpleadoTable.PrimerNombre
+78295>>>>>            Entry_Item EmpleadoTable.SegundoNombre
+78296>>>>>            Entry_Item EmpleadoTable.PrimerApellido
+78297>>>>>            Entry_Item EmpleadoTable.SegundoApellido
+78298>>>>>            Entry_Item Nacionalidad.CodigoNacionalidad
+78299>>>>>        End_Row
+78304>>>>>
+78304>>>>>        Set Main_File to EmpleadoTable.File_Number
+78305>>>>>
+78305>>>>>        Set Form_Width 0 to 58
+78306>>>>>        Set Header_Label 0 to "Codigo"
+78307>>>>>        Set Form_Width 1 to 106
+78308>>>>>        Set Header_Label 1 to "PrimerNombre"
+78309>>>>>        Set Form_Width 2 to 150
+78310>>>>>        Set Header_Label 2 to "SegundoNombre"
+78311>>>>>        Set Form_Width 3 to 121
+78312>>>>>        Set Header_Label 3 to "PrimerApellido"
+78313>>>>>        Set Form_Width 4 to 163
+78314>>>>>        Set Header_Label 4 to "SegundoApellido"
+78315>>>>>        Set Form_Width 5 to 60
+78316>>>>>        Set Header_Label 5 to "Nacionalidad"
+78317>>>>>    End_Object
+78318>>>>>
+78318>>>>>    Object oOK_bn is a Button
+78320>>>>>        Set Label     to "&Aceptar"
+78321>>>>>        Set Location to 159 349
+78322>>>>>        Set peAnchors to anBottomRight
+78323>>>>>
+78323>>>>>        Procedure OnClick
+78326>>>>>            Send Ok of oSelList
+78327>>>>>        End_Procedure
+78328>>>>>
+78328>>>>>    End_Object
+78329>>>>>
+78329>>>>>    Object oCancel_bn is a Button
+78331>>>>>        Set Label     to "&Cancelar"
+78332>>>>>        Set Location to 159 403
+78333>>>>>        Set peAnchors to anBottomRight
+78334>>>>>
+78334>>>>>        Procedure OnClick
+78337>>>>>            Send Cancel of oSelList
+78338>>>>>        End_Procedure
+78339>>>>>
+78339>>>>>    End_Object
+78340>>>>>
+78340>>>>>    Object oSearch_bn is a Button
+78342>>>>>        Set Label     to "&Buscar..."
+78343>>>>>        Set Location to 159 457
+78344>>>>>        Set peAnchors to anBottomRight
+78345>>>>>
+78345>>>>>        Procedure OnClick
+78348>>>>>            Send Search of oSelList
+78349>>>>>        End_Procedure
+78350>>>>>
+78350>>>>>    End_Object
+78351>>>>>
+78351>>>>>    On_Key Key_Alt+Key_A Send KeyAction of oOk_bn
+78352>>>>>    On_Key Key_Alt+Key_C Send KeyAction of oCancel_bn
+78353>>>>>    On_Key Key_Alt+Key_B Send KeyAction of oSearch_bn
+78354>>>>>
+78354>>>>>End_Object
+78355>>>>>
+78355>>>>>//*********************************************** end of TableLookup.tpl for Spanish ****************
+78355>>>>>
+78355>>>
+78355>>>
+78355>>>Activate_View Activate_R_Marcaje for R_Marcaje
+78365>>>>
+78365>>>Object R_Marcaje is a ReportView
+78367>>>    Set Location to 3 4
+78368>>>    Set Size to 194 364
+78369>>>    Set Label to "AAAA          MM          DD"
+78370>>>
+78370>>>    Object TxtReporteX is a Form
+78372>>>        Set Size to 15 118
+78373>>>        Set Location to 75 122
+78374>>>        Set Prompt_Button_Mode to PB_PromptOn
+78375>>>    
+78375>>>        // OnChange is called on every changed character
+78375>>>    //    Procedure OnChange
+78375>>>    //        String sValue
+78375>>>    //    
+78375>>>    //        Get Value to sValue
+78375>>>    //    End_Procedure
+78375>>>   // Set Prompt_Object to (oLista_empleado_sl(Current_Object))
+78375>>>        Set Label_Col_Offset to 40
+78376>>>        Set Color to clInactiveBorder
+78377>>>        Set Label_Justification_Mode to JMode_Top
+78378>>>   Set Prompt_Object to (LISTAMARCAJESLS(Current_Object))
+78379>>>    
+78379>>>        Procedure Prompt_Callback Integer hSL
+78382>>>            Set initial_column of hSL to 0
+78383>>>            Set export_column of hSL to 0
+78384>>>            
+78384>>>
+78384>>>        End_Procedure
+78385>>>    
+78385>>>    End_Object
+78386>>>    
+78386>>>    //***** CONDIGIONES PARA GENERAR
+78386>>>    Procedure CodicionesOpciones
+78389>>>        If (Checked_State(OpRegistroUnico) = True) Begin  
+78391>>>            If (TxtReporteX ne Integer) Begin
+78393>>>                Send Info_Box 'No ha realizado ninguna seleccion'        
+78394>>>            End
+78394>>>>
+78394>>>            Else Begin
+78395>>>                Send GenerarRerporte
+78396>>>            End
+78396>>>>
+78396>>>             
+78396>>>        End
+78396>>>>
+78396>>>        
+78396>>>        If (Checked_State(OpNacionalidad) = True) Begin
+78398>>>            
+78398>>>            If (TxtReporteX ne Integer) Begin
+78400>>>                Send Info_Box 'No ha realizado ninguna seleccion'        
+78401>>>            End
+78401>>>>
+78401>>>            Else Begin
+78402>>>               Send GenerarRerporteNacionalidad 
+78403>>>            End            
+78403>>>>
+78403>>>                       
+78403>>>        End
+78403>>>>
+78403>>>        
+78403>>>        If (Checked_State(OpCodigoEmpleado) = True) Begin  
+78405>>>            
+78405>>>             If (TxtReporteX ne Integer) Begin
+78407>>>                Send Info_Box 'No ha realizado ninguna seleccion'        
+78408>>>            End
+78408>>>>
+78408>>>            Else Begin
+78409>>>               Send GenerarRerporteEmpleado 
+78410>>>            End           
+78410>>>>
+78410>>>                       
+78410>>>        End
+78410>>>>
+78410>>>        
+78410>>>         If (Checked_State(OpFechas) = True) Begin            
+78412>>>                       
+78412>>>                Send  GenerarRerporteRangoFechas
+78413>>>           
+78413>>>           
+78413>>>        End
+78413>>>>
+78413>>>        
+78413>>>        
+78413>>>        
+78413>>>        
+78413>>>    End_Procedure
+78414>>>    Object BtnGenerarReporte is a Button
+78416>>>        Set Size to 14 100
+78417>>>        Set Location to 145 15
+78418>>>        Set Label to "Generar Reporte"
+78419>>>    
+78419>>>        // fires when the button is clicked
+78419>>>        Procedure OnClick
+78422>>>            Send CodicionesOpciones
+78423>>>        End_Procedure
+78424>>>    
+78424>>>    End_Object
+78425>>>    
+78425>>>     // Procedimiento para dar inicio a la generacion del reporte
+78425>>>    Procedure GenerarRerporte
+78428>>>        Integer sDatoGenerador
+78428>>>        
+78428>>>        Move 0 to sDatoGenerador  // asignamos valor vacio a nuestra variable
+78429>>>        Get Value of (TxtReporteX(Current_Object)) item 0 to sDatoGenerador// TxtReporte es la caja de texto en nuestro form. traemos us valor y lo asignamos a nuestro sDatoGenerador
+78430>>>        //Creamos una condicion para verificar que sDatoGenerador no este vacio
+78430>>>        If (Trim(sDatoGenerador)) ne 0 Begin
+78432>>>            Clear MarcajeTable  //tabla
+78433>>>            Move (Trim(sDatoGenerador)) to MarcajeTable.Codigo  //atributo codiog de la tabla Marcajestable
+78434>>>            Find eq MarcajeTable by Index.1   // busca segun el indice
+78435>>>>
+78435>>>            If [not Found] Begin
+78437>>>                Error 200 'Ingrese un Marcaje Valido' // si no se encuentra que retorne el mensaje
+78438>>>>
+78438>>>                Procedure_Return // retorna el procedimienot para hacer uso del sisema
+78439>>>            End
+78439>>>>
+78439>>>        End
+78439>>>>
+78439>>>   
+78439>>>   
+78439>>>        Set Report_Name of (ReporteMarcajesObject(Current_Object)) to "ReporteMarcajes.rpt"
+78440>>>        Send Run_Report to (ReporteMarcajesObject(Current_Object))
+78441>>>    End_Procedure
+78442>>>    
+78442>>>   Object ReporteMarcajesObject is a WinQLReport  //Creamos el objeto WinQLReport
+78444>>>        Set Output_Destination to WQL_PRINT_TO_WINDOW   // enviar la impresion de pantalla
+78445>>>        
+78445>>>        Procedure OnInitializeReport
+78448>>>             Local String var_Parametros
+78448>>>             Local Integer var_MarcajesTable        // declaracion de variable
+78448>>>             Local String var_Seleccion
+78448>>>            
+78448>>>            Forward Send OnInitializeReport  // lanzamos el iniciador del reporte
+78450>>>            
+78450>>>            Move 0 to var_MarcajesTable  // asignamos un valor vacio
+78451>>>            
+78451>>>          //  Get Value of (TxtReporteX(Current_Object)) item 0 to var_MarcajesTable  // obtenes el valor de la caja de texto y lo asignamos a la variable
+78451>>>            Get Value of TxtReporteX to var_MarcajesTable
+78452>>>            Move '' to var_Parametros // asignamos vacio a parametros
+78453>>>            
+78453>>>            // Validamos que el lo que se le asigno a var_Marcajes no haya sido un dato vacio
+78453>>>            If (var_MarcajesTable ne 0) Begin
+78455>>>                //Move 0 to var_Seleccion // asignamos vacio
+78455>>>                Append var_Seleccion '{MarcajeTable.Codigo} = ' ('"'+var_MarcajesTable+'"')  // adjuntamos la seleccion con el valor asignado
+78457>>>                //Append var_Seleccion '{MarcajeTable.Codigo} = ' (var_MarcajesTable)
+78457>>>            End
+78457>>>>
+78457>>>            
+78457>>>            Append var_Parametros '"'
+78458>>>            Append var_Parametros 'LISTA DE MARCAJES DE TRABAJADORES"'
+78459>>>            
+78459>>>     
+78459>>>            Set SelectionFormula to var_Seleccion
+78460>>>            Set Formula "Titulo" to var_Parametros
+78461>>>                
+78461>>>            
+78461>>>        End_Procedure
+78462>>>       
+78462>>>    
+78462>>>   End_Object
+78463>>>
+78463>>>    Object GrupoFechas is a Group
+78465>>>        Set Size to 55 142
+78466>>>        Set Location to 106 118
+78467>>>        Set Label to "Seleccione un rango de fecha"
+78468>>>        Set Color to clWhite
+78469>>>        Set Bitmap_Style to Bitmap_Tile
+78470>>>        Set Visible_State to False
+78471>>>
+78471>>>        Object oTextBox1 is a TextBox
+78473>>>            Set Size to 10 41
+78474>>>            Set Location to 37 23
+78475>>>            Set Label to "dd/mm/aaaa"
+78476>>>            Set Color to clWhite
+78477>>>            Set TextColor to clGrayText
+78478>>>        End_Object
+78479>>>
+78479>>>        Object TxtFechaDe is a Form
+78481>>>            Set Size to 13 46
+78482>>>            Set Location to 23 23
+78483>>>            Set Label to "De"
+78484>>>            Set Label_Col_Offset to 10
+78485>>>            Set Form_Datatype item 0 to Mask_Date_Window   // con esto convertimos el campo en campo fecha
+78486>>>        
+78486>>>            // OnChange is called on every changed character
+78486>>>        //    Procedure OnChange
+78486>>>        //        String sValue
+78486>>>        //    
+78486>>>        //        Get Value to sValue
+78486>>>        //    End_Procedure
+78486>>>        
+78486>>>        End_Object
+78487>>>
+78487>>>        Object TxtFechaA is a Form
+78489>>>            Set Size to 13 46
+78490>>>            Set Location to 23 82
+78491>>>            Set Label to "A"
+78492>>>            Set Label_Col_Offset to 10
+78493>>>            Set Form_Datatype item 0 to Mask_Date_Window   // con esto convertimos el campo en campo fecha
+78494>>>        
+78494>>>            // OnChange is called on every changed character
+78494>>>        //    Procedure OnChange
+78494>>>        //        String sValue
+78494>>>        //    
+78494>>>        //        Get Value to sValue
+78494>>>        //    End_Procedure
+78494>>>        
+78494>>>        End_Object
+78495>>>
+78495>>>        Object oTextBox1 is a TextBox
+78497>>>            Set Size to 10 41
+78498>>>            Set Location to 37 85
+78499>>>            Set Label to "dd/mm/aaaa"
+78500>>>            Set Color to clWhite
+78501>>>            Set TextColor to clGrayText
+78502>>>        End_Object
+78503>>>    End_Object
+78504>>>
+78504>>>    Object oRadioGroup1 is a RadioGroup
+78506>>>        Set Location to 46 16
+78507>>>        Set Size to 93 101
+78508>>>        Set Label to "GENERAR REPORTE POR"
+78509>>>        Set Color to clWhite
+78510>>>    
+78510>>>        Object OpRegistroUnico is a Radio
+78512>>>            Set Label to "Codigo de Registro"
+78513>>>            Set Size to 10 71
+78514>>>            Set Location to 20 13
+78515>>>            Set Color to clWhite
+78516>>>
+78516>>>            Procedure OnChange
+78519>>>                Forward Send OnChange
+78521>>>                If (Checked_State(Current_Object) = True) Begin
+78523>>>                   Set Prompt_Object of TxtReporteX to (oLista_empleado_sl(Current_Object)) 
+78524>>>                   Set Value of TxtReporteX to ""
+78525>>>                   //Set Prompt_Object to (oLista_empleado_sl(Current_Object))
+78525>>>                  //Set Type_Value of TxtFechaA to Date_Window
+78525>>>                End
+78525>>>>
+78525>>>                
+78525>>>            End_Procedure
+78526>>>
+78526>>>            
+78526>>>        End_Object
+78527>>>    
+78527>>>        Object OpCodigoEmpleado is a Radio
+78529>>>            Set Label to "Codigo Empleado"
+78530>>>            Set Size to 10 73
+78531>>>            Set Location to 35 13
+78532>>>            Set Color to clWhite
+78533>>>
+78533>>>            Procedure OnChange
+78536>>>                Forward Send OnChange
+78538>>>                If (Checked_State(Current_Object) = True) Begin
+78540>>>                   Set Prompt_Object of TxtReporteX to (EmpleadoLookUp(Current_Object))
+78541>>>                   Set Value of TxtReporteX to ""
+78542>>>                End
+78542>>>>
+78542>>>                
+78542>>>            End_Procedure
+78543>>>        End_Object
+78544>>>    
+78544>>>        Object OpNacionalidad is a Radio
+78546>>>            Set Label to "Nacionalidad"
+78547>>>            Set Size to 10 61
+78548>>>            Set Location to 51 13
+78549>>>            Set Color to clWhite
+78550>>>
+78550>>>            Procedure OnChange
+78553>>>                Forward Send OnChange
+78555>>>                //Send CodicionesOpciones
+78555>>>                If (Checked_State(Current_Object) = True) Begin
+78557>>>                   Set Prompt_Object of TxtReporteX to (ListaNacionalidadesPromp(Current_Object))
+78558>>>                   Set Value of TxtReporteX to ""
+78559>>>                End
+78559>>>>
+78559>>>                 
+78559>>>                // Set Prompt_Object to (oLista_empleado_sl(Current_Object))
+78559>>>                 
+78559>>>            End_Procedure
+78560>>>
+78560>>>            Procedure Mouse_Click Integer iWindowNumber Integer iPosition
+78563>>>                Forward Send Mouse_Click iWindowNumber iPosition
+78565>>>               // Set Prompt_Object to (Nacionalidad_sl(Current_Object))
+78565>>>            End_Procedure
+78566>>>        End_Object
+78567>>>    
+78567>>>        Procedure Notify_Select_State Integer iToItem Integer iFromItem
+78570>>>            Forward Send Notify_Select_State iToItem iFromItem
+78572>>>            // for augmentation
+78572>>>        End_Procedure
+78573>>>
+78573>>>        Object OpFechas is a Radio
+78575>>>            Set Label to "Fechas"
+78576>>>            Set Size to 10 61
+78577>>>            Set Location to 66 13
+78578>>>            Set Color to clWhite
+78579>>>
+78579>>>            Procedure OnChange
+78582>>>                Forward Send OnChange
+78584>>>               If (Checked_State(Current_Object) = True) Begin
+78586>>>              //Set Value of TxtFechaA to "activo"
+78586>>>               Set Visible_State of GrupoFechas to True
+78587>>>               Set Visible_State of TxtFechaDe to  True
+78588>>>               Set Visible_State of TxtFechaA to True
+78589>>>              End
+78589>>>>
+78589>>>              Else Begin
+78590>>>                Set Visible_State of GrupoFechas to False
+78591>>>                Set Visible_State of TxtFechaDe to False
+78592>>>                Set Visible_State of TxtFechaA to False
+78593>>>              
+78593>>>              End
+78593>>>>
+78593>>>              
+78593>>>               Set Value of TxtFechaDe to ""
+78594>>>               Set Value of TxtFechaA to ""
+78595>>>                
+78595>>>                
+78595>>>            End_Procedure
+78596>>>
+78596>>>
+78596>>>        End_Object
+78597>>>    
+78597>>>        // If you set Current_Radio, you must set it AFTER the
+78597>>>        // radio objects have been created AND AFTER Notify_Select_State has been
+78597>>>        // created. i.e. Set in bottom-code of object at the end!!
+78597>>>    //    Set Current_Radio to 0
+78597>>>    
+78597>>>    End_Object
+78598>>>    
+78598>>>    
+78598>>>    
+78598>>>   
+78598>>>    //*********************----------------
+78598>>>    
+78598>>>      // Procedimiento para dar inicio a la generacion del reporte por NACIONALIDAD
+78598>>>    Procedure GenerarRerporteNacionalidad
+78601>>>        Integer sDatoGenerador
+78601>>>        
+78601>>>        Move 0 to sDatoGenerador  // asignamos valor vacio a nuestra variable
+78602>>>        Get Value of (TxtReporteX(Current_Object)) item 0 to sDatoGenerador// TxtReporte es la caja de texto en nuestro form. traemos us valor y lo asignamos a nuestro sDatoGenerador
+78603>>>        //Creamos una condicion para verificar que sDatoGenerador no este vacio
+78603>>>        If (Trim(sDatoGenerador)) ne 0 Begin
+78605>>>            Clear Nacionalidad  //tabla
+78606>>>            Move (Trim(sDatoGenerador)) to Nacionalidad.CodigoNacionalidad  //atributo codiog de la tabla Marcajestable
+78607>>>            Find eq MarcajeTable by Index.1   // busca segun el indice
+78608>>>>
+78608>>>            If [not Found] Begin
+78610>>>                Error 200 'Ingrese una Nacionalidad Valida' // si no se encuentra que retorne el mensaje
+78611>>>>
+78611>>>                Procedure_Return // retorna el procedimienot para hacer uso del sisema
+78612>>>            End
+78612>>>>
+78612>>>        End
+78612>>>>
+78612>>>   
+78612>>>   
+78612>>>        Set Report_Name of (ReporteMarcajesObjectNacionalidad(Current_Object)) to "ReporteMarcajes.rpt"
+78613>>>        Send Run_Report to (ReporteMarcajesObjectNacionalidad(Current_Object))
+78614>>>    End_Procedure
+78615>>>    
+78615>>>    
+78615>>>    
+78615>>>     Object ReporteMarcajesObjectNacionalidad is a WinQLReport  //Creamos el objeto WinQLReport
+78617>>>        Set Output_Destination to WQL_PRINT_TO_WINDOW   // enviar la impresion de pantalla
+78618>>>        
+78618>>>        Procedure OnInitializeReport
+78621>>>             Local String var_Parametros
+78621>>>             Local Integer var_MarcajesTable        // declaracion de variable
+78621>>>             Local String var_Seleccion
+78621>>>            
+78621>>>            Forward Send OnInitializeReport  // lanzamos el iniciador del reporte
+78623>>>            
+78623>>>            Move 0 to var_MarcajesTable  // asignamos un valor vacio
+78624>>>            
+78624>>>          //  Get Value of (TxtReporteX(Current_Object)) item 0 to var_MarcajesTable  // obtenes el valor de la caja de texto y lo asignamos a la variable
+78624>>>            Get Value of TxtReporteX to var_MarcajesTable
+78625>>>            Move '' to var_Parametros // asignamos vacio a parametros
+78626>>>            
+78626>>>            // Validamos que el lo que se le asigno a var_Marcajes no haya sido un dato vacio
+78626>>>            If (var_MarcajesTable ne 0) Begin
+78628>>>                //Move 0 to var_Seleccion // asignamos vacio
+78628>>>                Append var_Seleccion '{Nacionalidad.CodigoNacionalidad} = ' ('"'+var_MarcajesTable+'"')  // adjuntamos la seleccion con el valor asignado
+78630>>>                //Append var_Seleccion '{MarcajeTable.Codigo} = ' (var_MarcajesTable)
+78630>>>            End
+78630>>>>
+78630>>>            
+78630>>>            Append var_Parametros '"'
+78631>>>            Append var_Parametros 'LISTA DE MARCAJES DE TRABAJADORES POR NACIONALIDAD"'
+78632>>>            
+78632>>>     
+78632>>>            Set SelectionFormula to var_Seleccion
+78633>>>            Set Formula "Titulo" to var_Parametros
+78634>>>                
+78634>>>            
+78634>>>        End_Procedure
+78635>>>       
+78635>>>    
+78635>>>   End_Object
+78636>>>    
+78636>>>    //-----------*************************
+78636>>>    
+78636>>>        
+78636>>>    //*********************----------------    GENERAR REPORTE POR EMPLEADO
+78636>>>    
+78636>>>      // Procedimiento para dar inicio a la generacion del reporte por NACIONALIDAD
+78636>>>    Procedure GenerarRerporteEmpleado
+78639>>>        Integer sDatoGenerador
+78639>>>        
+78639>>>        Move 0 to sDatoGenerador  // asignamos valor vacio a nuestra variable
+78640>>>        Get Value of (TxtReporteX(Current_Object)) item 0 to sDatoGenerador// TxtReporte es la caja de texto en nuestro form. traemos us valor y lo asignamos a nuestro sDatoGenerador
+78641>>>        //Creamos una condicion para verificar que sDatoGenerador no este vacio
+78641>>>        If (Trim(sDatoGenerador)) ne 0 Begin
+78643>>>            Clear EmpleadoTable  //tabla
+78644>>>            Move (Trim(sDatoGenerador)) to EmpleadoTable.Codigo  //atributo codiog de la tabla Marcajestable
+78645>>>            Find eq EmpleadoTable by Index.1   // busca segun el indice
+78646>>>>
+78646>>>            If [not Found] Begin
+78648>>>                Error 200 'Ingrese un codigo de empleado Valido' // si no se encuentra que retorne el mensaje
+78649>>>>
+78649>>>                Procedure_Return // retorna el procedimienot para hacer uso del sisema
+78650>>>            End
+78650>>>>
+78650>>>        End
+78650>>>>
+78650>>>   
+78650>>>   
+78650>>>        Set Report_Name of (ReporteMarcajesObjectEmpleado(Current_Object)) to "ReporteMarcajes.rpt"
+78651>>>        Send Run_Report to (ReporteMarcajesObjectEmpleado(Current_Object))
+78652>>>    End_Procedure
+78653>>>    
+78653>>>    
+78653>>>    
+78653>>>     Object ReporteMarcajesObjectEmpleado is a WinQLReport  //Creamos el objeto WinQLReport
+78655>>>        Set Output_Destination to WQL_PRINT_TO_WINDOW   // enviar la impresion de pantalla
+78656>>>        
+78656>>>        Procedure OnInitializeReport
+78659>>>             Local String var_Parametros
+78659>>>             Local Integer var_MarcajesTable        // declaracion de variable
+78659>>>             Local String var_Seleccion
+78659>>>            
+78659>>>            Forward Send OnInitializeReport  // lanzamos el iniciador del reporte
+78661>>>            
+78661>>>            Move 0 to var_MarcajesTable  // asignamos un valor vacio
+78662>>>            
+78662>>>          //  Get Value of (TxtReporteX(Current_Object)) item 0 to var_MarcajesTable  // obtenes el valor de la caja de texto y lo asignamos a la variable
+78662>>>            Get Value of TxtReporteX to var_MarcajesTable
+78663>>>            Move '' to var_Parametros // asignamos vacio a parametros
+78664>>>            
+78664>>>            // Validamos que el lo que se le asigno a var_Marcajes no haya sido un dato vacio
+78664>>>            If (var_MarcajesTable ne 0) Begin
+78666>>>                //Move 0 to var_Seleccion // asignamos vacio
+78666>>>                Append var_Seleccion '{EmpleadoTable.Codigo} = ' ('"'+var_MarcajesTable+'"')  // adjuntamos la seleccion con el valor asignado
+78668>>>                //Append var_Seleccion '{MarcajeTable.Codigo} = ' (var_MarcajesTable)
+78668>>>            End
+78668>>>>
+78668>>>            
+78668>>>            Append var_Parametros '"'
+78669>>>            Append var_Parametros 'LISTA DE MARCAJES DE TRABAJADORES POR EMPLEADO"'
+78670>>>            
+78670>>>     
+78670>>>            Set SelectionFormula to var_Seleccion
+78671>>>            Set Formula "Titulo" to var_Parametros
+78672>>>                
+78672>>>            
+78672>>>        End_Procedure
+78673>>>       
+78673>>>    
+78673>>>   End_Object
+78674>>>    
+78674>>>    //-----------*************************
+78674>>>    
+78674>>>    
+78674>>>    
+78674>>>    
+78674>>>    //*********************----------------    REPORTE POR RANGO DE FECHAS 
+78674>>>    
+78674>>>      
+78674>>>    Procedure GenerarRerporteRangoFechas
+78677>>>        
+78677>>>       Global_Variable Date @FechaInicial
+78677>>>       Global_Variable Date @FechaFinal
+78677>>>       Global_Variable Date @FechaConteo
+78677>>>        
+78677>>>        Indicate AceptarFecha True
+78678>>>        
+78678>>>        Move ("01/01/1900") to @FechaConteo
+78679>>>        //Move ("1900/01/01") to @FechaConteo
+78679>>>        
+78679>>>        Get Value of TxtFechaDe to @FechaInicial
+78680>>>        Get Value of TxtFechaA to @FechaFinal
+78681>>>        
+78681>>>         If (@FechaInicial <> '' or @FechaFinal <> '') Begin
+78683>>>            If ( (@FechaInicial < @FechaConteo) or (@FechaFinal < @FechaConteo)) Begin 
+78685>>>            Error 200 'Ingrese Fechas V lidas'
+78686>>>>
+78686>>>            Indicate AceptarFecha False
+78687>>>        End
+78687>>>>
+78687>>>        Else If (@FechaInicial > @FechaFinal ) Begin
+78690>>>             Error 200 'FECHA INICIAL NO PUEDE SER MAYOR A FECHA FINAL'
+78691>>>>
+78691>>>            Indicate AceptarFecha False            
+78692>>>        End
+78692>>>>
+78692>>>        Else If (@FechaFinal >= @FechaInicial ) Begin
+78695>>>            [ AceptarFecha ] Send Run_Report to (ReporteFiltroFechas(Current_Object))
+78696>>>        End
+78696>>>>
+78696>>>         //*****--++++++++++
+78696>>>         End
+78696>>>>
+78696>>>         Else Begin
+78697>>>            Send Info_Box 'Las Fechas son Requeridas'
+78698>>>         End
+78698>>>>
+78698>>>        
+78698>>>        
+78698>>>        If (@FechaInicial <> '' or @FechaFinal <> '') Begin
+78700>>>            Set Report_Name of (ReporteFiltroFechas(Current_Object)) to "ReporteMarcajes.rpt"
+78701>>>            Send Run_Report to (ReporteFiltroFechas(Current_Object))
+78702>>>        End
+78702>>>>
+78702>>>     
+78702>>>        
+78702>>>    End_Procedure
+78703>>>    
+78703>>>    Object ReporteFiltroFechas is a WinQLReport
+78705>>>        
+78705>>>       // Set Report_name to "S3002D.rpt"
+78705>>>        Set Output_Destination to WQL_PRINT_TO_WINDOW
+78706>>>        
+78706>>>       
+78706>>>        
+78706>>>        Procedure OnInitializeReport
+78709>>>            
+78709>>>            Date FechaInicialX
+78709>>>            Date FechaFinalX
+78709>>>            Date FechaConteoX
+78709>>>            String var_Parametros
+78709>>>            String SeleccionX
+78709>>>            String SubFechaInicial
+78709>>>            String SubFechaFinal            
+78709>>>            
+78709>>>            
+78709>>>            Get Value of TxtFechaDe to FechaInicialX
+78710>>>            Get Value of TxtFechaA to FechaFinalX
+78711>>>           
+78711>>>            Append SubFechaInicial (Mid(FechaInicialX,4,7))
+78712>>>            Append SubFechaInicial '-'
+78713>>>            Append SubFechaInicial (Mid(FechaInicialX,2,4))
+78714>>>            Append SubFechaInicial '-'
+78715>>>            Append SubFechaInicial (Mid(FechaInicialX,2,1))
+78716>>>            
+78716>>>            Append SubFEchaFinal (Mid(FechaFinalX,4,7))
+78717>>>            Append SubFEchaFinal '-'
+78718>>>            Append SubFEchaFinal (Mid(FechaFinalX,2,4))
+78719>>>            Append SubFEchaFinal '-'
+78720>>>            Append SubFEchaFinal (Mid(FechaFinalX,2,1))
+78721>>>            
+78721>>>           
+78721>>>          
+78721>>>            
+78721>>>            Forward Send OninitializeReport
+78723>>>            
+78723>>>            Clear MarcajeTable
+78724>>>            If (AceptarFecha = True) Begin
+78726>>>                
+78726>>>               // Append @Seleccion '{MarcajeTable.FechaMarcaje} >= Date'  ('"'+@FechaInicial+'"') // ' And {MarcajeTable.FechaMarcaje} <= Date' ('"'+@FechaFinal+'"')
+78726>>>                Append SeleccionX '{MarcajeTable.FechaMarcaje} in "'
+78727>>>                Append SeleccionX SubFechaInicial
+78728>>>                Append SeleccionX '" to "'
+78729>>>                Append SeleccionX SubFechaFinal
+78730>>>                Append SeleccionX '"'
+78731>>>                
+78731>>>            End
+78731>>>>
+78731>>>            
+78731>>>           Append var_Parametros '"'
+78732>>>            Append var_Parametros 'LISTA DE MARCAJES POR FECHA"'
+78733>>>            
+78733>>>     
+78733>>>            Set SelectionFormula to SeleccionX
+78734>>>            Set Formula "Titulo" to var_Parametros
+78735>>>            
+78735>>>            
+78735>>>        End_Procedure
+78736>>>    End_Object
+78737>>>        
+78737>>>      
+78737>>>       
+78737>>>  
+78737>>>End_Object
+78738>>>
+78738>>>  
+78738>
+78738>        Procedure Activate_About
+78741>            Send DoAbout "" "" "" "" ""
+78742>        End_Procedure
+78743>
+78743>    End_Object
+78744>
+78744>End_Object
+78745>
+78745>Start_UI
+78746>
+78746>//************************** end of WindowsProject.tpl for Spanish **************
+78746>
 Summary
 Memory Available: 2147483646
 Total Warnings : 0
 Total Errors   : 0
-Total Symbols  : 44625
+Total Symbols  : 44727
 Total Resources: 0
-Total Commands : 78371
+Total Commands : 78745
 Total Windows  : 1
 Total Pages    : 1
-Static Data    : 478525
-Message area   : 544922
-Total Blocks   : 28159
+Static Data    : 482712
+Message area   : 548474
+Total Blocks   : 28289
